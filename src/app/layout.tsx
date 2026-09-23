@@ -4,14 +4,14 @@ import { cookies } from 'next/headers';
 import './globals.css';
 import { HTML_LANG, LOCALE_COOKIE, OG_LOCALE, normalizeLocale } from '@/lib/i18n';
 import { getDict } from '@/lib/dictionaries';
-import { SITE } from '@/lib/config';
+import { SITE, siteUrl } from '@/lib/config';
 import { YandexMetrika } from '@/components/YandexMetrika';
 
 export async function generateMetadata(): Promise<Metadata> {
   const store = await cookies();
   const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
   const dict = getDict(locale);
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+  const base = siteUrl();
 
   return {
     metadataBase: new URL(base),

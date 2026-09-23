@@ -7,6 +7,24 @@ export const SITE = {
   seriesSize: 7,
 } as const;
 
+/**
+ * Публичный адрес сайта (canonical, Open Graph, sitemap, robots, вебхук).
+ *
+ * Читается только на сервере, поэтому префикс NEXT_PUBLIC_ не нужен:
+ * он бы встроил значение в клиентский бандл без всякой пользы.
+ * Старое имя поддерживается, чтобы уже заданные переменные не сломались.
+ */
+export function siteUrl(): string {
+  const raw = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  return raw.replace(/\/$/, '');
+}
+
+/** То же, но без запасного значения — для случаев, где нужен именно заданный адрес */
+export function siteUrlOrNull(): string | null {
+  const raw = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL;
+  return raw ? raw.replace(/\/$/, '') : null;
+}
+
 export const LEAD_STATUSES = [
   'new',
   'in_progress',

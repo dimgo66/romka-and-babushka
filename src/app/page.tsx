@@ -10,7 +10,7 @@ import { Footer } from '@/components/Footer';
 
 import { LOCALE_COOKIE, normalizeLocale } from '@/lib/i18n';
 import { getDict } from '@/lib/dictionaries';
-import { SITE } from '@/lib/config';
+import { SITE, siteUrl } from '@/lib/config';
 import { STORIES, PLATFORMS, embedUrl, platformName, storyBlurb, storyTitle, watchUrl } from '@/lib/stories';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,7 +28,7 @@ export default async function HomePage() {
   const store = await cookies();
   const locale = normalizeLocale(store.get(LOCALE_COOKIE)?.value);
   const dict = getDict(locale);
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+  const base = siteUrl();
 
   // Микроразметка Schema.org: серия книг и каждая новелла с аудиоверсией
   const jsonLd = {

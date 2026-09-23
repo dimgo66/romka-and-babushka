@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { registerWebhook, sendTelegramMessage } from '@/lib/telegram';
 import { isAuthenticated } from '@/lib/auth';
+import { siteUrlOrNull } from '@/lib/config';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
 
-  const publicUrl = url.searchParams.get('url') || process.env.NEXT_PUBLIC_SITE_URL || url.origin;
+  const publicUrl = url.searchParams.get('url') || siteUrlOrNull() || url.origin;
   const result = await registerWebhook(publicUrl);
 
   if (!result.ok) {

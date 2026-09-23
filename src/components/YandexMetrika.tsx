@@ -20,12 +20,15 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
 ym(${id}, "init", {
-  clickmap: true,
-  trackLinks: true,
-  accurateTrackBounce: true,
+  ssr: true,
   webvisor: true,
-  trackHash: true,
+  clickmap: true,
   ecommerce: "dataLayer",
+  referrer: document.referrer,
+  url: location.href,
+  accurateTrackBounce: true,
+  trackLinks: true,
+  trackHash: true,
   params: { site: "romka-and-babushka" }
 });
         `}

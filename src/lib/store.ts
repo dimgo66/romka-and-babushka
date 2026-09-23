@@ -71,7 +71,39 @@ export type LeadStats = {
 
 /* ──────────────────────────  выбор бэкенда  ────────────────────────── */
 
-const HAS_DATABASE = Boolean(process.env.DATABASE_URL ?? process.env.POSTGRES_PRISMA_URL);
+/**
+ * Имена переменных с адресом базы, которые встречаются в реальности.
+ * Neon через интеграцию Vercel создаёт сразу несколько: DATABASE_URL,
+ * POSTGRES_PRISMA_URL (пулер), POSTGRES_URL_NON_POOLING (прямое подключение)
+ * и другие. Порядок — от самого предпочтительного к запасному: сначала
+ * пулер (он нужен serverless-функциям), затем прямое подключение.
+ */
+const DB_URL_VARS = [
+  'DATABASE_URL',
+  'POSTGRES_PRISMA_URL',
+  'POSTGRES_URL',
+  'DATABASE_URL_UNPOOLED',
+  'POSTGRES_URL_NON_POOLING',
+] as const;
+
+/** Первое заданное имя из DB_URL_VARS либо null. */
+function databaseUrl(): string | null {
+  for (const name of DB_URL_VARS) {
+    const value = process.env[name]?.trim();
+    if (value) return value;
+  }
+  return null;
+}
+
+/** Имя переменной, из которой взяли адрес (для диагностики). */
+function databaseUrlVar(): string | null {
+  for (const name of DB_URL_VARS) {
+    if (process.env[name]?.trim()) return name;
+  }
+  return null;
+}
+
+const HAS_DATABASE = databaseUrl() !== null;
 
 type PrismaLike = {
   lead: {
@@ -85,6 +117,9 @@ type PrismaLike = {
   };
 };
 
+/** Опции конструктора PrismaClient: datasourceUrl поддержан в Prisma 6. */
+type PrismaOptions = { datasourceUrl?: string };
+
 let prismaClient: PrismaLike | null = null;
 
 async function getPrisma(): Promise<PrismaLike> {
@@ -93,12 +128,22 @@ async function getPrisma(): Promise<PrismaLike> {
   // Статический импорт: Next.js трассирует @prisma/client и его движок
   // в серверный бандл. Пакет уже в зависимостях, генерация — `npm run db:generate`.
   const mod = await import('@prisma/client');
-  const PrismaClient = mod.PrismaClient ?? (mod as { default?: { PrismaClient: new () => PrismaLike } }).default?.PrismaClient;
+  const PrismaClient =
+    mod.PrismaClient ??
+    (mod as { default?: { PrismaClient: new (options?: PrismaOptions) => PrismaLike } }).default?.PrismaClient;
   if (!PrismaClient) {
     throw new Error('Prisma Client не сгенерирован: выполните `npm run db:generate`');
   }
 
-  prismaClient = new PrismaClient() as unknown as PrismaLike;
+  // Адрес передаём явно: схема Prisma читает только env("DATABASE_URL"),
+  // а Neon через интеграцию Vercel может создать переменную с другим именем
+  // (POSTGRES_URL, POSTGRES_PRISMA_URL и т. п.).
+  const url = databaseUrl();
+  if (!url) {
+    throw new Error('Адрес базы не найден: задайте DATABASE_URL или POSTGRES_URL');
+  }
+
+  prismaClient = new PrismaClient({ datasourceUrl: url }) as unknown as PrismaLike;
   return prismaClient;
 }
 
@@ -155,6 +200,40 @@ function rowToLead(row: Record<string, unknown>): Lead {
 
 export function storageKind(): 'postgres' | 'json' {
   return HAS_DATABASE ? 'postgres' : 'json';
+}
+
+/**
+ * Диагностика хранилища без раскрытия адреса базы.
+ * Помогает понять, почему на проде всё ещё JSON: переменная не задана,
+ * задана не в том окружении или задана с другим именем.
+ */
+export function storageDiagnostics() {
+  const host = (() => {
+    const url = databaseUrl();
+    if (!url) return null;
+    try {
+      return new URL(url).host;
+    } catch {
+      return 'не удалось разобрать адрес';
+    }
+  })();
+
+  return {
+    kind: storageKind(),
+    /** Какое имя переменной реально найдено в окружении */
+    urlVarFound: databaseUrlVar(),
+    /** Все имена, которые проверялись */
+    checkedVars: [...DB_URL_VARS],
+    /** Какие из них заданы (без значений) */
+    presentVars: DB_URL_VARS.filter((name) => Boolean(process.env[name]?.trim())),
+    /** Хост базы — не секрет, помогает убедиться, что это нужный проект */
+    host,
+    nodeEnv: process.env.NODE_ENV,
+    vercelEnv: process.env.VERCEL_ENV ?? null,
+    verdict: HAS_DATABASE
+      ? 'База подключена'
+      : 'Адрес базы не найден. Проверьте, что переменная добавлена для окружения Production (Settings → Environment Variables → Environments)',
+  };
 }
 
 export async function createLead(input: NewLead): Promise<Lead> {

@@ -151,6 +151,10 @@ node -e "console.log('sha256:'+require('crypto').createHash('sha256').update('М
 > с пометкой «НЕ сохранена в базе» и пометкой сохранить данные вручную (HTTP 201,
 > в ответе `saved: false, delivered: true`). Это временная страховка — базу всё
 > равно нужно подключить, иначе заявок не будет в CRM и в экспорте CSV.
+>
+> Проверить, видит ли базу конкретное окружение, можно диагностикой
+> `GET /api/telegram/setup?diagnose=1` (под администратором): поле `storage`
+> покажет `kind: postgres|json`, имя найденной переменной и хост базы.
 
 > **Почему у `SITE_URL` нет префикса `NEXT_PUBLIC_`.** Vercel предупреждает, что
 > публичный префикс раскрывает значение в браузере. Адрес сайта читается только
@@ -175,10 +179,17 @@ node -e "console.log('sha256:'+require('crypto').createHash('sha256').update('М
 
 Создайте PostgreSQL и скопируйте строку подключения. Варианты:
 
-- **Neon** — через Vercel: Storage → Marketplace → Neon (даёт `DATABASE_URL` автоматически);
+- **Neon** — через Vercel: Storage → Marketplace → Neon. Интеграция создаёт
+  переменные автоматически, и код читает **любую** из них:
+  `DATABASE_URL`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL`,
+  `DATABASE_URL_UNPOOLED`, `POSTGRES_URL_NON_POOLING` (в этом порядке).
+  Если Vercel сообщает «already has an existing environment variable with name
+  `DATABASE_URL`» — переменная уже создана интеграцией, создавать её вручную
+  не нужно: откройте существующую и проверьте, что она отмечена для
+  **Production** (галочки Environments внизу формы).
 - **Supabase** — Project Settings → Database → Connection string → URI.
 
-Затем локально, с этим `DATABASE_URL` в `.env`:
+Затем локально, с этим адресом в `.env`:
 
 ```bash
 npm run db:generate   # prisma generate — создаёт Prisma Client

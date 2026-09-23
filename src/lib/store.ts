@@ -17,9 +17,9 @@ import { LEAD_STATUSES, isLeadStatus } from './config';
  *    Оно предназначено только для разработки: на Vercel файловая система
  *    доступна лишь на чтение, поэтому в продакшене обязательно DATABASE_URL.
  *
- * Prisma Client подключается динамически: пакет @prisma/client не входит в
- * обязательные зависимости, поэтому сайт собирается и работает без него,
- * пока база данных не подключена.
+ * Prisma Client импортируется статически: так сборщик Next.js трассирует пакет
+ * вместе с query-движком и включает их в серверный бандл на Vercel.
+ * Без DATABASE_URL клиент не создаётся и код работает на JSON-хранилище.
  */
 
 export type Lead = {
@@ -89,16 +89,16 @@ let prismaClient: PrismaLike | null = null;
 
 async function getPrisma(): Promise<PrismaLike> {
   if (prismaClient) return prismaClient;
-  // Спецификатор собирается в рантайме, чтобы сборщик Next.js не требовал
-  // пакет @prisma/client при отсутствии базы данных.
-  const specifier = '@prisma' + '/client';
-  const mod = (await import(/* webpackIgnore: true */ specifier)) as {
-    PrismaClient: new () => PrismaLike;
-    default?: { PrismaClient: new () => PrismaLike };
-  };
-  const PrismaClient = mod.PrismaClient ?? mod.default?.PrismaClient;
-  if (!PrismaClient) throw new Error('Prisma Client не сгенерирован: выполните `npx prisma generate`');
-  prismaClient = new PrismaClient();
+
+  // Статический импорт: Next.js трассирует @prisma/client и его движок
+  // в серверный бандл. Пакет уже в зависимостях, генерация — `npm run db:generate`.
+  const mod = await import('@prisma/client');
+  const PrismaClient = mod.PrismaClient ?? (mod as { default?: { PrismaClient: new () => PrismaLike } }).default?.PrismaClient;
+  if (!PrismaClient) {
+    throw new Error('Prisma Client не сгенерирован: выполните `npm run db:generate`');
+  }
+
+  prismaClient = new PrismaClient() as unknown as PrismaLike;
   return prismaClient;
 }
 

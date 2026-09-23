@@ -101,24 +101,28 @@ node -e "console.log('sha256:'+require('crypto').createHash('sha256').update('М
 
 ## 5. Деплой на Vercel
 
-1. **База данных.** Создайте PostgreSQL в Vercel Postgres, Neon или Supabase и скопируйте   строку подключения.
+1. **База данных.** Создайте PostgreSQL в Vercel Postgres, Neon или Supabase и скопируйте строку подключения.
 2. **Схема.** Локально с `DATABASE_URL` в `.env`:
    ```bash
-   npm i -D prisma @prisma/client
-   npm run db:generate
-   npm run db:push
+   npm run db:generate   # prisma generate — создаёт Prisma Client
+   npm run db:push       # prisma db push — создаёт таблицы lead и admin_users
    ```
+   Prisma уже в зависимостях (`prisma` 6.19.3 + `@prisma/client` 6.19.3).
 3. **Git.** Запушьте репозиторий и импортируйте его в Vercel (Framework: Next.js,
    build command берётся из `vercel.json`: `prisma generate && next build`).
 4. **Переменные окружения** — добавьте все из таблицы выше в Settings → Environment Variables.
-5. **Первый деплой.** После публикации включите зависимости Prisma в прод-сборку
-   (они намеренно не обязательны, чтобы сайт собирался и без БД):
-   ```bash
-   npm i @prisma/client && git commit -am "enable prisma client" && git push
-   ```
+5. **Деплой.** Vercel выполнит `npm install` → `prisma generate` → `next build`
+   автоматически. Отдельных действий с Prisma не требуется.
 6. **Вебхук Telegram.** Откройте один раз
    `https://<домен>/api/telegram/setup?secret=<TELEGRAM_WEBHOOK_SECRET>`
    — бот зарегистрирует вебхук. Проверить связь: POST на тот же адрес из CRM под администратором.
+
+> **Важно про мажорные версии Prisma.** Установлена ветка **6.19.3** — намеренно.
+> Prisma 7 убрала `url = env("DATABASE_URL")` из схемы: теперь подключение задаётся
+> через `prisma.config.ts` и драйвер-адаптер (`@prisma/adapter-pg`), который передаётся
+> в конструктор `PrismaClient`. Обновление до 7 потребует переписать
+> `prisma/schema.prisma` и `src/lib/store.ts`. Раз PRISMA-клиент подключается в коде
+> лениво и без адаптера, ветка 6 остаётся рабочей и совместимой с текущим кодом.
 
 ---
 

@@ -1,6 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
 import { NextResponse } from 'next/server';
 
-import { createLead, getStats, listLeads, storageKind } from '@/lib/store';
+import { createLead, getStats, listLeads, storageKind, type Lead } from '@/lib/store';
 import { validateLeadInput } from '@/lib/validation';
 import { notifyNewLead, telegramConfigured } from '@/lib/telegram';
 import { clientIp, rateLimit } from '@/lib/rate-limit';
@@ -91,6 +93,50 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, id: lead.id, storage: storageKind() }, { status: 201 });
   } catch (error) {
     console.error('[api/leads] ошибка сохранения заявки:', error);
+
+    // Запасной путь: если сохранить не удалось (например, на Vercel не задан
+    // DATABASE_URL, а файловая система только для чтения), заявка всё равно
+    // уходит менеджеру в Telegram — иначе обращение клиента теряется молча.
+    if (telegramConfigured()) {
+      const fallback = buildUnsavedLead(validation.value, ip, request);
+      const notified = await notifyNewLead(fallback);
+      if (notified.ok) {
+        console.warn('[api/leads] заявка не сохранена, но доставлена в Telegram:', fallback.id);
+        return NextResponse.json(
+          { ok: true, id: fallback.id, storage: storageKind(), saved: false, delivered: true },
+          { status: 201 },
+        );
+      }
+      console.error('[telegram] запасная доставка тоже не удалась:', notified.error);
+    }
+
     return NextResponse.json({ ok: false, error: 'serverError' }, { status: 500 });
   }
+}
+
+/**
+ * Заявка, которую не удалось записать в хранилище.
+ * Используется только для уведомления, чтобы обращение не потерялось.
+ */
+function buildUnsavedLead(
+  value: { name: string; email: string; comment?: string | null; locale: Locale },
+  ip: string | null,
+  request: Request,
+): Lead {
+  const now = new Date().toISOString();
+  return {
+    id: `unsaved-${randomUUID()}`,
+    name: value.name,
+    email: value.email,
+    comment: value.comment ?? null,
+    locale: value.locale,
+    status: 'new',
+    notes: null,
+    consent: true,
+    source: 'not-saved',
+    ip,
+    userAgent: request.headers.get('user-agent')?.slice(0, 300) ?? null,
+    createdAt: now,
+    updatedAt: now,
+  };
 }

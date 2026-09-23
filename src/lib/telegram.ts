@@ -24,9 +24,11 @@ export function telegramConfigured(): boolean {
 }
 
 export function formatLeadMessage(lead: Lead): string {
+  const unsaved = lead.source === 'not-saved';
+
   const lines = [
-    '🎉 Новая заявка!',
-    '',
+    unsaved ? '⚠️ Заявка НЕ сохранена в базе — сохраните данные вручную!' : '🎉 Новая заявка!',
+    ...(unsaved ? ['Хранилище недоступно, эти данные есть только в сообщении.', ''] : ['']),
     `Имя: ${lead.name}`,
     `Email: ${lead.email}`,
     `Комментарий: ${lead.comment?.trim() || '—'}`,
@@ -35,7 +37,7 @@ export function formatLeadMessage(lead: Lead): string {
     `ID: ${lead.id}`,
   ];
 
-  if (lead.source) lines.push(`Источник: ${lead.source}`);
+  if (lead.source && !unsaved) lines.push(`Источник: ${lead.source}`);
   return lines.join('\n');
 }
 

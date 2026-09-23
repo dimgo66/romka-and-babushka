@@ -2,8 +2,7 @@
 
 export const SITE = {
   authorSite: 'https://agacher.com/',
-  contactEmail: 'info@agacher.com',
-  telegram: 'https://t.me/agacher',
+  contactEmail: 'agacher.bragbook@gmail.com',
   pdfFragment: '/files/bilingual-golden-bean-fragment.pdf',
   seriesSize: 7,
 } as const;

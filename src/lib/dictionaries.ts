@@ -85,7 +85,6 @@ export type Dict = {
     authorLink: string;
     contactsHeading: string;
     emailLabel: string;
-    telegramLabel: string;
     legalHeading: string;
     privacy: string;
     consent: string;
@@ -271,7 +270,6 @@ const ru: Dict = {
     authorLink: 'agacher.com',
     contactsHeading: 'Контакты',
     emailLabel: 'Email',
-    telegramLabel: 'Telegram',
     legalHeading: 'Документы',
     privacy: 'Политика конфиденциальности',
     consent: 'Согласие на обработку данных',
@@ -457,7 +455,6 @@ const en: Dict = {
     authorLink: 'agacher.com',
     contactsHeading: 'Contacts',
     emailLabel: 'Email',
-    telegramLabel: 'Telegram',
     legalHeading: 'Documents',
     privacy: 'Privacy policy',
     consent: 'Personal data consent',

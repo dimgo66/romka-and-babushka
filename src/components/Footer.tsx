@@ -49,17 +49,6 @@ export function Footer({ locale, dict }: Props) {
                 {SITE.contactEmail}
               </a>
             </li>
-            <li>
-              {dict.footer.telegramLabel}:{' '}
-              <a
-                href={SITE.telegram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-underline"
-              >
-                @agacher
-              </a>
-            </li>
           </ul>
 
           <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-brand-ink">

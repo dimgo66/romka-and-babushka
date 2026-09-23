@@ -96,7 +96,7 @@ export default async function HomePage() {
 
       <main id="main">
         <Hero locale={locale} dict={dict} />
-        <About locale={locale} dict={dict} />
+        <About dict={dict} />
         <StoriesGrid locale={locale} dict={dict} />
         <LeadForm locale={locale} dict={dict} />
       </main>

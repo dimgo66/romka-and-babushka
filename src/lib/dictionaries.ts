@@ -34,6 +34,12 @@ export type Dict = {
     illustrationsNote: string;
     /** alt для каждой иллюстрации страницы — по порядку PAGE_ILLUSTRATIONS */
     illustrationsAlt: string[];
+    galleryPrev: string;
+    galleryNext: string;
+    galleryZoom: string;
+    galleryClose: string;
+    galleryCounter: string;
+    galleryHint: string;
   };
   stories: {
     heading: string;
@@ -223,6 +229,12 @@ const ru: Dict = {
       'Разворот книги: продолжение истории, двуязычный текст',
       'Разворот книги: завершение фрагмента, двуязычный текст',
     ],
+    galleryPrev: 'Предыдущий разворот',
+    galleryNext: 'Следующий разворот',
+    galleryZoom: 'Открыть крупно',
+    galleryClose: 'Закрыть просмотр',
+    galleryCounter: 'Разворот',
+    galleryHint: 'Переключайте развороты стрелками, нажмите на картинку — откроется крупно.',
   },
   stories: {
     heading: 'Слушать рассказы',
@@ -414,6 +426,12 @@ const en: Dict = {
       'Book spread: the story continues, bilingual text',
       'Book spread: the end of the fragment, bilingual text',
     ],
+    galleryPrev: 'Previous spread',
+    galleryNext: 'Next spread',
+    galleryZoom: 'Open larger',
+    galleryClose: 'Close viewer',
+    galleryCounter: 'Spread',
+    galleryHint: 'Switch spreads with the arrows, click an image to view it larger.',
   },
   stories: {
     heading: 'Listen to the stories',

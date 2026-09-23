@@ -29,6 +29,10 @@ export const METRIKA_GOALS = {
   languageSwitch: 'language_switch',
   /** Открытие плеера внутри карточки рассказа */
   playerOpen: 'story_player_open',
+  /** Переключение разворота в галерее иллюстраций */
+  galleryNext: 'gallery_switch',
+  /** Открытие иллюстрации крупно (лайтбокс) */
+  galleryZoom: 'gallery_zoom',
 } as const;
 
 export type MetrikaGoal = (typeof METRIKA_GOALS)[keyof typeof METRIKA_GOALS];

@@ -1,10 +1,8 @@
 import type { Dict } from '@/lib/dictionaries';
-import type { Locale } from '@/lib/i18n';
 import { SITE } from '@/lib/config';
 import { PageIllustrations } from '@/components/PageIllustrations';
 
 type Props = {
-  locale: Locale;
   dict: Dict;
 };
 
@@ -29,8 +27,6 @@ export function About({ dict }: Props) {
                 <span aria-hidden="true">↗</span>
               </a>
             </div>
-
-            <PageIllustrations dict={dict} />
           </div>
 
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -42,6 +38,9 @@ export function About({ dict }: Props) {
             ))}
           </ul>
         </div>
+
+        {/* Развороты книги — во всю ширину страницы, вне двухколоночной сетки */}
+        <PageIllustrations dict={dict} />
       </div>
     </section>
   );

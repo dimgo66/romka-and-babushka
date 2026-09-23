@@ -3,9 +3,15 @@
 export const SITE = {
   authorSite: 'https://agacher.com/',
   contactEmail: 'agacher.bragbook@gmail.com',
-  pdfFragment: '/files/bilingual-golden-bean-fragment.pdf',
   seriesSize: 7,
 } as const;
+
+/** Иллюстрации страниц фрагмента в виде широких разворотов (1615×808) */
+export const PAGE_ILLUSTRATIONS = [
+  '/files/bilingual-golden-bean-fragment_Страница_1.jpg',
+  '/files/bilingual-golden-bean-fragment_Страница_2.jpg',
+  '/files/bilingual-golden-bean-fragment_Страница_3.jpg',
+] as const;
 
 /**
  * Публичный адрес сайта (canonical, Open Graph, sitemap, robots, вебхук).

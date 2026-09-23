@@ -1,13 +1,14 @@
 import type { Dict } from '@/lib/dictionaries';
 import type { Locale } from '@/lib/i18n';
 import { SITE } from '@/lib/config';
+import { PageIllustrations } from '@/components/PageIllustrations';
 
 type Props = {
   locale: Locale;
   dict: Dict;
 };
 
-export function About({ locale, dict }: Props) {
+export function About({ dict }: Props) {
   return (
     <section id="about" tabIndex={-1} className="section">
       <div className="container-page">
@@ -27,15 +28,9 @@ export function About({ locale, dict }: Props) {
                 {dict.about.authorLinkLabel}
                 <span aria-hidden="true">↗</span>
               </a>
-              <a
-                href={SITE.pdfFragment}
-                download
-                className="link-underline text-sm"
-                lang={locale === 'en' ? 'ru' : undefined}
-              >
-                {dict.about.fragmentLinkLabel}
-              </a>
             </div>
+
+            <PageIllustrations dict={dict} />
           </div>
 
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">

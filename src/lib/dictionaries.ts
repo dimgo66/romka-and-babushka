@@ -30,7 +30,10 @@ export type Dict = {
     authorLinkLabel: string;
     seriesTitle: string;
     seriesPoints: { title: string; text: string }[];
-    fragmentLinkLabel: string;
+    illustrationsTitle: string;
+    illustrationsNote: string;
+    /** alt для каждой иллюстрации страницы — по порядку PAGE_ILLUSTRATIONS */
+    illustrationsAlt: string[];
   };
   stories: {
     heading: string;
@@ -213,7 +216,13 @@ const ru: Dict = {
         text: 'Русский и английский тексты для билингвальных семей и русскоязычных читателей за рубежом.',
       },
     ],
-    fragmentLinkLabel: 'Скачать фрагмент книги (PDF)',
+    illustrationsTitle: 'Как выглядит разворот книги',
+    illustrationsNote: 'Русская и английская версии идут в одном издании — текст и иллюстрации на каждом развороте.',
+    illustrationsAlt: [
+      'Разворот книги: русский и английский тексты, акварельная иллюстрация',
+      'Разворот книги: продолжение истории, двуязычный текст',
+      'Разворот книги: завершение фрагмента, двуязычный текст',
+    ],
   },
   stories: {
     heading: 'Слушать рассказы',
@@ -398,7 +407,13 @@ const en: Dict = {
         text: 'Russian and English texts for bilingual families and Russian-speaking readers abroad.',
       },
     ],
-    fragmentLinkLabel: 'Download a book fragment (PDF)',
+    illustrationsTitle: 'What a book spread looks like',
+    illustrationsNote: 'The Russian and English editions come in one series — text and illustrations on each spread.',
+    illustrationsAlt: [
+      'Book spread: Russian and English texts, watercolour illustration',
+      'Book spread: the story continues, bilingual text',
+      'Book spread: the end of the fragment, bilingual text',
+    ],
   },
   stories: {
     heading: 'Listen to the stories',

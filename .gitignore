@@ -12,6 +12,6 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 
-# Исходный PDF в корне (сайт отдаёт копию из public/files)
+# РСЃС…РѕРґРЅС‹Р№ PDF РІ РєРѕСЂРЅРµ (СЃР°Р№С‚ РѕС‚РґР°С‘С‚ РєРѕРїРёСЋ РёР· public/files)
 *.pdf
 !public/files/*.pdf

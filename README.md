@@ -127,19 +127,63 @@ node -e "console.log('sha256:'+require('crypto').createHash('sha256').update('М
 
 ## 5. Деплой на Vercel
 
-1. **База данных.** Создайте PostgreSQL в Vercel Postgres, Neon или Supabase и скопируйте строку подключения.
-2. **Схема.** Локально с `DATABASE_URL` в `.env`:
-   ```bash
-   npm run db:generate   # prisma generate — создаёт Prisma Client
-   npm run db:push       # prisma db push — создаёт таблицы lead и admin_users
-   ```
-   Prisma уже в зависимостях (`prisma` 6.19.3 + `@prisma/client` 6.19.3).
-3. **Git.** Запушьте репозиторий и импортируйте его в Vercel (Framework: Next.js,
-   build command берётся из `vercel.json`: `prisma generate && next build`).
-4. **Переменные окружения** — добавьте все из таблицы выше в Settings → Environment Variables.
-5. **Деплой.** Vercel выполнит `npm install` → `prisma generate` → `next build`
+### 5.1. Переменные окружения (обязательный шаг)
+
+Добавляются в дашборде: **Project → Settings → Environment Variables**.
+Для каждой переменной выберите окружения **Production** и **Preview**, затем **Save**.
+
+| Переменная | Обязательна | Значение |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | да | `https://<ваш-домен>` — без слэша в конце |
+| `DATABASE_URL` | **да** | строка подключения PostgreSQL |
+| `AUTH_SECRET` | **да** | случайная строка ≥ 32 символов |
+| `ADMIN_CREDENTIALS` | **да** | `email:пароль` или `email:sha256:<hex>` |
+| `TELEGRAM_BOT_TOKEN` | нет | токен от @BotFather |
+| `TELEGRAM_CHAT_ID` | нет | ID чата менеджера |
+| `TELEGRAM_WEBHOOK_SECRET` | нет | случайная строка |
+| `NEXT_PUBLIC_YANDEX_METRIKA_ID` | нет | номер счётчика Метрики |
+
+> **Без `DATABASE_URL` заявки не сохраняются:** форма вернёт ошибку 500, потому что
+> файловая система Vercel доступна только для чтения. Локальное JSON-хранилище
+> работает лишь при разработке.
+
+Сгенерировать секреты:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"   # AUTH_SECRET
+node -e "console.log('sha256:'+require('crypto').createHash('sha256').update('МОЙ_ПАРОЛЬ','utf8').digest('hex'))"
+```
+
+**После добавления переменных нужен Redeploy** (Deployments → ⋯ → Redeploy):
+значения `NEXT_PUBLIC_*` встраиваются в бандл на этапе сборки, без пересборки
+они не применятся.
+
+### 5.2. База данных
+
+Создайте PostgreSQL и скопируйте строку подключения. Варианты:
+
+- **Neon** — через Vercel: Storage → Marketplace → Neon (даёт `DATABASE_URL` автоматически);
+- **Supabase** — Project Settings → Database → Connection string → URI.
+
+Затем локально, с этим `DATABASE_URL` в `.env`:
+
+```bash
+npm run db:generate   # prisma generate — создаёт Prisma Client
+npm run db:push       # prisma db push — создаёт таблицы lead и admin_users
+```
+
+Prisma уже в зависимостях (`prisma` 6.19.3 + `@prisma/client` 6.19.3).
+
+### 5.3. Деплой
+
+1. **Git.** Импортируйте репозиторий в Vercel (Framework: Next.js, build command
+   берётся из `vercel.json`: `prisma generate && next build`).
+2. **Деплой.** Vercel выполнит `npm install` → `prisma generate` → `next build`
    автоматически. Отдельных действий с Prisma не требуется.
-6. **Вебхук Telegram.** Откройте один раз
+3. **Проверка.** Откройте сайт, отправьте тестовую заявку — она должна появиться
+   в CRM (`/admin`) и прийти в Telegram.
+4. **Вебхук Telegram** (необязательно — нужен только для команд боту).
+   Откройте один раз
    `https://<домен>/api/telegram/setup?secret=<TELEGRAM_WEBHOOK_SECRET>`
    — бот зарегистрирует вебхук. Проверить связь: POST на тот же адрес из CRM под администратором.
 

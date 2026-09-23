@@ -218,6 +218,13 @@ export function storageDiagnostics() {
     }
   })();
 
+  // На случай неожиданного имени: перечисляем ВСЕ переменные окружения,
+  // которые похожи на адрес базы (только имена, без значений).
+  // Помогает, когда интеграция Vercel создаёт переменную со своим названием.
+  const suspicious = Object.keys(process.env)
+    .filter((name) => /DATABASE|POSTGRES|NEON|_PG_|^PG/i.test(name))
+    .sort();
+
   return {
     kind: storageKind(),
     /** Какое имя переменной реально найдено в окружении */
@@ -226,6 +233,10 @@ export function storageDiagnostics() {
     checkedVars: [...DB_URL_VARS],
     /** Какие из них заданы (без значений) */
     presentVars: DB_URL_VARS.filter((name) => Boolean(process.env[name]?.trim())),
+    /** Заданы, но пусты — например DATABASE_URL="" (частая ошибка при вставке шаблона) */
+    emptyVars: DB_URL_VARS.filter((name) => name in process.env && !process.env[name]?.trim()),
+    /** Прочие переменные с адресом базы (имена без значений) */
+    otherDbLikeVars: suspicious,
     /** Хост базы — не секрет, помогает убедиться, что это нужный проект */
     host,
     nodeEnv: process.env.NODE_ENV,

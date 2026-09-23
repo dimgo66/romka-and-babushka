@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import { registerWebhook, sendTelegramMessage } from '@/lib/telegram';
+import {
+  registerWebhook,
+  sendTelegramMessage,
+  telegramDiagnostics,
+  verifyBotToken,
+} from '@/lib/telegram';
 import { isAuthenticated } from '@/lib/auth';
 import { siteUrlOrNull } from '@/lib/config';
 
@@ -23,11 +28,26 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
 
+  // ?diagnose=1 — проверка настроек без попытки поставить вебхук.
+  // Показывает форму токена (не раскрывая секрет) и живой ответ Bot API.
+  if (url.searchParams.get('diagnose') === '1') {
+    const bot = await verifyBotToken();
+    return NextResponse.json(
+      { ok: bot.ok, diagnostics: telegramDiagnostics(), bot },
+      { status: bot.ok ? 200 : 500 },
+    );
+  }
+
   const publicUrl = url.searchParams.get('url') || siteUrlOrNull() || url.origin;
   const result = await registerWebhook(publicUrl);
 
   if (!result.ok) {
-    return NextResponse.json({ ok: false, error: result.error }, { status: 500 });
+    // На ошибке прикладываем диагностику: чаще всего причина — неверный токен
+    const bot = await verifyBotToken();
+    return NextResponse.json(
+      { ok: false, error: result.error, diagnostics: telegramDiagnostics(), bot },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true, webhook: `${publicUrl.replace(/\/$/, '')}/api/telegram/webhook` });
@@ -41,5 +61,12 @@ export async function POST() {
   const result = await sendTelegramMessage(
     '✅ Проверка связи: сайт «Рассказы о Ромке и его бабушке» подключён к этому чату.',
   );
-  return NextResponse.json(result, { status: result.ok ? 200 : 500 });
+  if (result.ok) return NextResponse.json(result, { status: 200 });
+
+  // Ошибка отправки: показываем, дело в токене или в чате
+  const bot = await verifyBotToken();
+  return NextResponse.json(
+    { ...result, diagnostics: telegramDiagnostics(), bot },
+    { status: 500 },
+  );
 }

@@ -63,7 +63,7 @@ src/
       leads/export/route.ts # экспорт CSV (BOM, разделитель «;»)
       auth/login|logout     # JWT-сессия администратора
       telegram/webhook      # вебхук Bot API
-      telegram/setup        # регистрация вебхука + тестовое сообщение
+      telegram/setup        # вебхук, тестовое сообщение, диагностика (diagnose=1)
   components/               # Header, Hero, About, StoriesGrid, LeadForm, Footer, LanguageSwitcher, admin/*
   lib/
     dictionaries.ts         # словари ru/en
@@ -199,6 +199,19 @@ Prisma уже в зависимостях (`prisma` 6.19.3 + `@prisma/client` 6.
    Откройте один раз
    `https://<домен>/api/telegram/setup?secret=<TELEGRAM_WEBHOOK_SECRET>`
    — бот зарегистрирует вебхук. Проверить связь: POST на тот же адрес из CRM под администратором.
+5. **Если Telegram отвечает `401 Unauthorized`** — токен бота недействителен.
+   Проверьте его, не раскрывая секрет:
+
+   ```
+   https://<домен>/api/telegram/setup?diagnose=1     # под сессией администратора CRM
+   ```
+
+   В ответе `diagnostics.formatValid` и `diagnostics.secretPartLength` покажут,
+   корректен ли токен: у верного токена секретная часть ровно **35 символов**.
+   Если длина меньше — при вставке в Vercel потерялись символы. Если формат
+   верный, а `bot.ok: false` — токен отозван, перевыпустите его в @BotFather
+   (`/revoke`) и обновите переменную. Диагностика не выводит сам токен,
+   только его форму и числовой id бота.
 
 > **Важно про мажорные версии Prisma.** Установлена ветка **6.19.3** — намеренно.
 > Prisma 7 убрала `url = env("DATABASE_URL")` из схемы: теперь подключение задаётся

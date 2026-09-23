@@ -116,3 +116,80 @@ export async function registerWebhook(publicUrl: string): Promise<TelegramResult
     return { ok: false, error: (error as Error).message };
   }
 }
+
+/** Живая проверка токена через Bot API: getMe. Возвращает имя бота либо ошибку. */
+export async function verifyBotToken(): Promise<{
+  ok: boolean;
+  botUsername?: string;
+  botName?: string;
+  botId?: number;
+  error?: string;
+}> {
+  const token = botToken();
+  if (!token) return { ok: false, error: 'TELEGRAM_BOT_TOKEN не задан' };
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/getMe`, { cache: 'no-store' });
+    const data = (await response.json()) as {
+      ok: boolean;
+      description?: string;
+      result?: { id: number; username?: string; first_name?: string };
+    };
+    if (!data.ok) {
+      return {
+        ok: false,
+        error:
+          data.description === 'Unauthorized'
+            ? 'Unauthorized — токен недействителен (отозван или искажён при вставке)'
+            : (data.description ?? 'неизвестная ошибка'),
+      };
+    }
+    return {
+      ok: true,
+      botId: data.result?.id,
+      botUsername: data.result?.username,
+      botName: data.result?.first_name,
+    };
+  } catch (error) {
+    return { ok: false, error: (error as Error).message };
+  }
+}
+
+/**
+ * Диагностика настроек Telegram без раскрытия секретов.
+ * Помогает понять, почему Bot API отвечает 401 Unauthorized:
+ * токен обрезан, содержит лишние символы или относится к другому боту.
+ */
+export function telegramDiagnostics() {
+  const raw = process.env.TELEGRAM_BOT_TOKEN ?? '';
+  const token = botToken();
+  const ids = chatIds();
+
+  // Токен Bot API: <числовой id бота>:<35 символов [A-Za-z0-9_-]>
+  const shape = token ? /^\d+:[A-Za-z0-9_-]{35}$/.test(token) : false;
+  const secretPart = token?.split(':')[1] ?? '';
+
+  return {
+    tokenSet: Boolean(token),
+    /** Длина как задано в окружении — покажет лишние пробелы или кавычки */
+    rawLength: raw.length,
+    lengthAfterTrim: token?.length ?? 0,
+    hasSurroundingWhitespace: raw !== raw.trim(),
+    hasQuotes: /^["']|["']$/.test(raw),
+    formatValid: shape,
+    /** Числовой id бота — не секрет, виден в ссылке на бота. Сверить с ожидаемым. */
+    botId: token?.split(':')[0] ?? null,
+    /** Длина секретной части: у корректного токена ровно 35 */
+    secretPartLength: secretPart.length,
+    chatIds: ids,
+    chatIdCount: ids.length,
+    configured: telegramConfigured(),
+    verdict: !token
+      ? 'Токен не задан'
+      : !shape
+        ? 'Формат неверен: ожидается «<id бота>:<35 символов>». Проверьте, не потерялись ли символы и нет ли пробелов/кавычек'
+        : ids.length === 0
+          ? 'Формат верный, но не задан TELEGRAM_CHAT_ID'
+          : 'Формат верный. Ответ 401 значит, что токен отозван или недействителен — перевыпустите в @BotFather (/revoke)',
+  };
+}

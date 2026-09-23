@@ -40,6 +40,14 @@ export type Dict = {
     galleryClose: string;
     galleryCounter: string;
     galleryHint: string;
+    galleryZoomIn: string;
+    galleryZoomOut: string;
+    /** Кнопка «вписать разворот целиком в экран» */
+    galleryFit: string;
+    /** Кнопка «показать в реальном размере 1:1» */
+    galleryActual: string;
+    /** Подсказка в лайтбоксе: картинку можно двигать мышкой */
+    galleryDragHint: string;
   };
   stories: {
     heading: string;
@@ -235,6 +243,12 @@ const ru: Dict = {
     galleryClose: 'Закрыть просмотр',
     galleryCounter: 'Разворот',
     galleryHint: 'Переключайте развороты стрелками, нажмите на картинку — откроется крупно.',
+    galleryZoomIn: 'Увеличить',
+    galleryZoomOut: 'Уменьшить',
+    galleryFit: 'Вписать целиком',
+    galleryActual: 'Реальный размер',
+    galleryDragHint:
+      'Колёсико — масштаб. Ведите мышкой к краю экрана, чтобы посмотреть остальную часть разворота.',
   },
   stories: {
     heading: 'Слушать рассказы',
@@ -432,6 +446,12 @@ const en: Dict = {
     galleryClose: 'Close viewer',
     galleryCounter: 'Spread',
     galleryHint: 'Switch spreads with the arrows, click an image to view it larger.',
+    galleryZoomIn: 'Zoom in',
+    galleryZoomOut: 'Zoom out',
+    galleryFit: 'Fit to screen',
+    galleryActual: 'Actual size',
+    galleryDragHint:
+      'Use the mouse wheel to zoom. Move the cursor to the edge of the screen to see the rest of the spread.',
   },
   stories: {
     heading: 'Listen to the stories',

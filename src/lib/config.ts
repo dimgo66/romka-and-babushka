@@ -14,6 +14,12 @@ export const PAGE_ILLUSTRATIONS = [
 ] as const;
 
 /**
+ * Пиксельный размер файлов-иллюстраций (все три одинаковые).
+ * Нужен лайтбоксу, чтобы считать масштаб: 1:1 — это полный размер файла.
+ */
+export const PAGE_ILLUSTRATION_SIZE = { width: 1615, height: 808 } as const;
+
+/**
  * Публичный адрес сайта (canonical, Open Graph, sitemap, robots, вебхук).
  *
  * Читается только на сервере, поэтому префикс NEXT_PUBLIC_ не нужен:

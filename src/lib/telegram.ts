@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { createHash } from 'node:crypto';
+
 import type { Lead } from './store';
 
 /**
@@ -169,6 +171,12 @@ export function telegramDiagnostics() {
   const shape = token ? /^\d+:[A-Za-z0-9_-]{35}$/.test(token) : false;
   const secretPart = token?.split(':')[1] ?? '';
 
+  // Отпечаток (не сам токен): позволяет сверить значение на разных
+  // окружениях, не раскрывая секрет. Совпал отпечаток — совпал токен.
+  const fingerprint = token
+    ? createHash('sha256').update(token).digest('hex').slice(0, 8)
+    : null;
+
   return {
     tokenSet: Boolean(token),
     /** Длина как задано в окружении — покажет лишние пробелы или кавычки */
@@ -181,6 +189,8 @@ export function telegramDiagnostics() {
     botId: token?.split(':')[0] ?? null,
     /** Длина секретной части: у корректного токена ровно 35 */
     secretPartLength: secretPart.length,
+    /** Первые 8 символов sha256 от токена — для сверки окружений */
+    fingerprint,
     chatIds: ids,
     chatIdCount: ids.length,
     configured: telegramConfigured(),

@@ -1,0 +1,58 @@
+// Prisma schema — PostgreSQL (Vercel Postgres / Neon / Supabase)
+// Локально без DATABASE_URL сайт использует JSON-хранилище (src/lib/store.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadStatus {
+  new
+  in_progress
+  contacted
+  confirmed
+  cancelled
+}
+
+enum Locale {
+  ru
+  en
+}
+
+/// Предварительная заявка на покупку книг серии
+model Lead {
+  id        String     @id @default(cuid())
+  name      String
+  email     String
+  comment   String?
+  locale    Locale     @default(ru)
+  status    LeadStatus @default(new)
+  notes     String?
+  consent   Boolean    @default(true)
+  source    String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
+}
+
+/// Администратор CRM (дополнительно к списку ADMIN_CREDENTIALS из env)
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  active       Boolean  @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+
+  @@map("admin_users")
+}

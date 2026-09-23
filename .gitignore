@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+build/
+.env
+.env*.local
+.data/
+.dsh-tools/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.DS_Store
+Thumbs.db
+
+# »сходный PDF в корне (сайт отдаЄт копию из public/files)
+*.pdf
+!public/files/*.pdf

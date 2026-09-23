@@ -8,7 +8,7 @@ import {
 } from '@/lib/telegram';
 import { isAuthenticated } from '@/lib/auth';
 import { siteUrlOrNull } from '@/lib/config';
-import { storageDiagnostics } from '@/lib/store';
+import { storageDiagnostics, verifyDatabase } from '@/lib/store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,12 +30,19 @@ export async function GET(request: Request) {
   }
 
   // ?diagnose=1 — проверка настроек без попытки поставить вебхук.
-  // Показывает форму токена (не раскрывая секрет), живой ответ Bot API
-  // и состояние хранилища заявок (подключена ли база на этом окружении).
+  // Показывает форму токена (не раскрывая секрет), живой ответ Bot API,
+  // состояние хранилища и живую проверку базы (доступна ли таблица заявок).
   if (url.searchParams.get('diagnose') === '1') {
     const bot = await verifyBotToken();
+    const database = await verifyDatabase();
     return NextResponse.json(
-      { ok: bot.ok, diagnostics: telegramDiagnostics(), storage: storageDiagnostics(), bot },
+      {
+        ok: bot.ok,
+        diagnostics: telegramDiagnostics(),
+        storage: storageDiagnostics(),
+        database,
+        bot,
+      },
       { status: bot.ok ? 200 : 500 },
     );
   }

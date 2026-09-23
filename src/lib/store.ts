@@ -243,8 +243,71 @@ export function storageDiagnostics() {
     vercelEnv: process.env.VERCEL_ENV ?? null,
     verdict: HAS_DATABASE
       ? 'База подключена'
-      : 'Адрес базы не найден. Проверьте, что переменная добавлена для окружения Production (Settings → Environment Variables → Environments)',
+      : DB_URL_VARS.some((name) => name in process.env && !process.env[name]?.trim())
+        ? 'Переменная с адресом базы ЗАДАНА, НО ПУСТА. Вставьте строку подключения в её значение (Vercel: Settings → Environment Variables → ⋮ → Edit) и сделайте Redeploy'
+        : 'Адрес базы не найден. Проверьте, что переменная добавлена для окружения Production (Settings → Environment Variables → Environments)',
   };
+}
+
+/**
+ * Живая проверка подключения к базе: получается ли запросить таблицу заявок.
+ * Нужна, чтобы отличить «база не подключена» от «подключена, но таблиц нет»
+ * (таблицы создаёт `npm run db:push`).
+ */
+export async function verifyDatabase(): Promise<{
+  connected: boolean;
+  tableReady: boolean;
+  leadCount?: number;
+  error?: string;
+}> {
+  if (!HAS_DATABASE) {
+    return { connected: false, tableReady: false, error: 'Адрес базы не задан' };
+  }
+
+  try {
+    const prisma = await getPrisma();
+    const leadCount = await prisma.lead.count();
+    return { connected: true, tableReady: true, leadCount };
+  } catch (error) {
+    const message = (error as Error).message ?? String(error);
+
+    // P2021 — таблица не существует: соединение есть, схемы нет.
+    // Всё остальное (P1001 «can't reach», таймаут, неверный пароль) —
+    // это именно отсутствие связи, а не готовая база без таблиц.
+    const tableMissing = /P2021|relation .* does not exist|table .* does not exist/i.test(message);
+
+    if (tableMissing) {
+      return {
+        connected: true,
+        tableReady: false,
+        error:
+          'База доступна, но таблицы нет. Выполните `npm run db:push` со строкой подключения этой базы',
+      };
+    }
+
+    return {
+      connected: false,
+      tableReady: false,
+      error: summarizeDbError(message),
+    };
+  }
+}
+
+/** Короткая суть ошибки Prisma: самая полезная строка вместо всего стека. */
+function summarizeDbError(message: string): string {
+  const lines = message
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  // Prisma кладёт понятное объяснение в отдельную строку
+  const meaningful = lines.find((line) =>
+    /can't reach|authentication failed|does not exist|timed out|timeout|denied|ENOTFOUND|ECONNREFUSED|password/i.test(
+      line,
+    ),
+  );
+
+  return (meaningful ?? lines[0] ?? 'неизвестная ошибка').slice(0, 200);
 }
 
 export async function createLead(input: NewLead): Promise<Lead> {

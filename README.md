@@ -184,9 +184,31 @@ node -e "console.log('sha256:'+require('crypto').createHash('sha256').update('М
   `DATABASE_URL`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL`,
   `DATABASE_URL_UNPOOLED`, `POSTGRES_URL_NON_POOLING` (в этом порядке).
   Если Vercel сообщает «already has an existing environment variable with name
-  `DATABASE_URL`» — переменная уже создана интеграцией, создавать её вручную
-  не нужно: откройте существующую и проверьте, что она отмечена для
-  **Production** (галочки Environments внизу формы).
+  `DATABASE_URL`» — переменная уже создана, создавать её вручную не нужно:
+  откройте существующую и проверьте, что она отмечена для **Production**
+  (галочки Environments внизу формы).
+
+  > **Важно про интеграцию Neon через Marketplace.** Она не создаёт
+  > `DATABASE_URL` напрямую. Вместо этого она создаёт **префикс** (поле «Custom
+  > Prefix», по умолчанию — `DATABASE_URL`) и добавляет его к собственным
+  > именам: `DATABASE_URL_DATABASE_URL`, `DATABASE_URL_POSTGRES_URL`,
+  > `DATABASE_URL_PGHOST` и ещё ~15 переменных. В итоге в проекте появляется
+  > пустая `DATABASE_URL` и заполненные `DATABASE_URL_*` — код их не видит, и
+  > заявки уходят в JSON-фолбэк (в Telegram приходят, в CRM нет).
+  >
+  > Диагностика показывает это как `emptyVars: ["DATABASE_URL"]`, `kind: "json"`.
+  > Посмотреть список переменных проекта:
+  > ```bash
+  > vercel env ls production --project <проект>
+  > ```
+  > **Решение** — задать `DATABASE_URL` вручную настоящей строкой подключения
+  > (возьмите значение `DATABASE_URL_POSTGRES_URL` или строку из консоли Neon;
+  > хост должен содержать `-pooler`), затем сделать **Redeploy**. Переменные
+  > `DATABASE_URL_*` можно оставить — они безвредны и просто не читаются.
+  >
+  > **Порядок важен:** интеграция создаёт переменные позже последнего деплоя,
+  > поэтому создания переменной недостаточно — нужен новый деплой, иначе
+  > рантайм продолжит видеть старое пустое значение.
 - **Supabase** — Project Settings → Database → Connection string → URI.
 
 Затем локально, с этим адресом в `.env`:

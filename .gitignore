@@ -2,15 +2,20 @@ node_modules/
 .next/
 out/
 build/
-.env
-.env*.local
 .data/
 .dsh-tools/
 *.tsbuildinfo
 next-env.d.ts
-.vercel
 .DS_Store
 Thumbs.db
+
+# Секреты: любые .env*, кроме публичного шаблона.
+# Создаётся Vercel CLI (.env.local, .env.neon.local) — в репозиторий не попадает.
+.env*
+!.env.example
+
+# Привязка к проекту Vercel (содержит id проекта, но не секреты)
+.vercel
 
 # Исходный PDF в корне (сайт отдаёт копию из public/files)
 *.pdf

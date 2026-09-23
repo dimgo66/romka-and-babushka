@@ -35,8 +35,9 @@ cp .env.example .env      # Windows: copy .env.example .env
 npm run dev               # http://localhost:3000
 ```
 
-Готовый `.env` для разработки уже создан: PostgreSQL не подключён, заявки пишутся
-в `.data/leads.json`, вход в CRM — `admin@romka.local` / `romka-admin`.
+Готовый `.env` для разработки уже создан: заявки пишутся в PostgreSQL (если задан
+`DATABASE_URL`) либо в `.data/leads.json`. Вход в CRM — `admin@romka.local` / `romka-admin`
+(те же данные на проде, см. раздел 6).
 
 Наполнить CRM демо-заявками:
 
@@ -280,6 +281,27 @@ Prisma уже в зависимостях (`prisma` 6.19.3 + `@prisma/client` 6.
 ## 6. CRM
 
 Адрес: `/admin`. Вход по email и паролю из `ADMIN_CREDENTIALS`.
+
+| Окружение | Адрес | Логин | Пароль |
+| --- | --- | --- | --- |
+| Прод | `https://o-romke-and-babushke.vercel.app/admin` | `admin@romka.local` | `romka-admin` |
+| Локально | `http://localhost:3000/admin` | `admin@romka.local` | `romka-admin` |
+
+На проде пароль хранится хешем (`email:sha256:<hex>`), в открытом виде — только
+локально в `.env`. Пароль намеренно простой: CRM закрывает лишь список заявок,
+а вход защищён лимитом 8 попыток за 5 минут с одного IP. Смена пароля:
+
+```bash
+# 1. Посчитать хеш (Node 22)
+node -e "console.log(require('node:crypto').createHash('sha256').update('НОВЫЙ_ПАРОЛЬ','utf8').digest('hex'))"
+
+# 2. Записать в Vercel (Value: admin@romka.local:sha256:<хеш>) и сделать Redeploy
+vercel env rm ADMIN_CREDENTIALS production --yes && vercel env add ADMIN_CREDENTIALS production
+vercel deploy --prod
+```
+
+> Смена `AUTH_SECRET` разлогинивает все активные сессии CRM (подпись JWT
+> перестаёт совпадать). Делайте это вместе со сменой пароля.
 
 Возможности: статистика (всего / за 7 дней / по статусам / по языкам), таблица заявок,
 смена статуса (`new → in_progress → contacted → confirmed → cancelled`), заметки менеджера,

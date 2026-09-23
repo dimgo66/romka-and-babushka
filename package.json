@@ -11,7 +11,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "node prisma/seed.mjs"
+    "db:seed": "node prisma/seed.mjs",
+    "telegram:check": "node scripts/telegram-check.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

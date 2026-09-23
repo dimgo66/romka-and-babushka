@@ -187,7 +187,7 @@ const ru: Dict = {
     facts: ['7 книг в цикле', '80–100 страниц', 'Формат тетради в клеточку', 'Русский и английский'],
     ctaOrder: 'Оставить заявку',
     ctaListen: 'Слушать рассказы',
-    illustrationAlt: 'Акварельная иллюстрация: чёрный кот Ромка и его бабушка',
+    illustrationAlt: 'Бабушка читает рассказы о Ромке — фотография',
   },
   about: {
     heading: 'О цикле',
@@ -373,7 +373,7 @@ const en: Dict = {
     facts: ['7 books in the series', '80–100 pages', 'Squared-notebook format', 'Russian and English'],
     ctaOrder: 'Leave a request',
     ctaListen: 'Listen to the stories',
-    illustrationAlt: 'Watercolour illustration: Romka the black cat and his grandmother',
+    illustrationAlt: 'Grandmother reading the stories about Romka — photograph',
   },
   about: {
     heading: 'About the series',

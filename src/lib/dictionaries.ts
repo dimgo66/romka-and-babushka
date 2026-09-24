@@ -8,6 +8,7 @@ export type Dict = {
   };
   nav: {
     about: string;
+    plays: string;
     listen: string;
     order: string;
     languageLabel: string;
@@ -48,6 +49,14 @@ export type Dict = {
     galleryActual: string;
     /** Подсказка в лайтбоксе: картинку можно двигать мышкой */
     galleryDragHint: string;
+  };
+  plays: {
+    heading: string;
+    title: string;
+    body: string;
+    points: { title: string; text: string }[];
+    playsBookLabel: string;
+    festivalLabel: string;
   };
   stories: {
     heading: string;
@@ -100,6 +109,9 @@ export type Dict = {
     authorHeading: string;
     authorText: string;
     authorLink: string;
+    playsHeading: string;
+    playsBook: string;
+    festival: string;
     contactsHeading: string;
     emailLabel: string;
     legalHeading: string;
@@ -178,7 +190,7 @@ const ru: Dict = {
   meta: {
     title: 'Рассказы о Ромке и его бабушке — слушать и заказать книги',
     description:
-      'Семь новелл Софии Агачер для билингвальных семей. Слушайте рассказы в исполнении автора на VK Video и YouTube и оставьте предварительную заявку на покупку книг серии.',
+      'Семь новелл Софии Агачер для билингвальных семей. Слушайте рассказы в исполнении автора на VK Video и YouTube, читайте пьесы для детских театров в сборнике «Живая книга» и оставляйте предварительную заявку на покупку книг серии.',
     keywords: [
       'Рассказы о Ромке и его бабушке',
       'София Агачер',
@@ -186,10 +198,14 @@ const ru: Dict = {
       'детские рассказы',
       'аудиокниги для детей',
       'семейное чтение',
+      'пьесы для детского театра',
+      'сборник Живая книга',
+      'фестиваль Живая книга',
     ],
   },
   nav: {
     about: 'О цикле',
+    plays: 'Пьесы и фестиваль',
     listen: 'Слушать рассказы',
     order: 'Оставить заявку',
     languageLabel: 'Язык сайта',
@@ -198,7 +214,7 @@ const ru: Dict = {
   hero: {
     eyebrow: 'София Агачер · цикл из 7 книг',
     titleRu: 'Рассказы о Ромке и его бабушке',
-    titleEn: 'The Adventures of Romka and his Grandmother',
+    titleEn: 'Stories About Romka and His Grandmother',
     lead: 'Семь отдельных книг для билингвальных семей: около 80–100 страниц каждая, формат тетради в клеточку, тёплые акварельные иллюстрации. Русская и английская версии — в одной серии.',
     facts: ['7 книг в цикле', '80–100 страниц', 'Формат тетради в клеточку', 'Русский и английский'],
     ctaOrder: 'Оставить заявку',
@@ -249,6 +265,24 @@ const ru: Dict = {
     galleryActual: 'Реальный размер',
     galleryDragHint:
       'Колёсико — масштаб. Ведите мышкой к краю экрана, чтобы посмотреть остальную часть разворота.',
+  },
+  plays: {
+    heading: 'Пьесы и фестиваль',
+    title: 'По рассказам Софии Агачер написаны пьесы',
+    body:
+      'Герои цикла живут не только на страницах книг: София Агачер написала по рассказам о Ромке и его бабушке пьесы для детских театральных коллективов. Все они собраны в сборнике «Живая книга», а ежегодно по этим пьесам проходит фестиваль «Живая книга».',
+    points: [
+      {
+        title: 'Сборник пьес «Живая книга»',
+        text: 'Пьесы для детских театральных коллективов по рассказам о Ромке и его бабушке — в одном сборнике на платформе Ridero.',
+      },
+      {
+        title: 'Ежегодный фестиваль «Живая книга»',
+        text: 'Каждый год по этим пьесам ставятся спектакли: рассказы оживают на сцене в исполнении детских театральных коллективов.',
+      },
+    ],
+    playsBookLabel: 'Читать сборник на Ridero',
+    festivalLabel: 'Сайт фестиваля «Живая книга»',
   },
   stories: {
     heading: 'Слушать рассказы',
@@ -302,7 +336,10 @@ const ru: Dict = {
     tagline: 'Рассказы о Ромке и его бабушке — цикл книг для семейного чтения на русском и английском.',
     authorHeading: 'Автор',
     authorText: 'София Агачер — автор цикла и чтец аудиоверсий рассказов.',
-    authorLink: 'agacher.com',
+    authorLink: 'sofia-agacher.vercel.app',
+    playsHeading: 'Пьесы и фестивали',
+    playsBook: 'Сборник пьес «Живая книга»',
+    festival: 'Фестиваль «Живая книга»',
     contactsHeading: 'Контакты',
     emailLabel: 'Email',
     legalHeading: 'Документы',
@@ -379,20 +416,23 @@ const ru: Dict = {
 
 const en: Dict = {
   meta: {
-    title: 'The Adventures of Romka and his Grandmother — listen and pre-order the books',
+    title: 'Stories About Romka and His Grandmother — listen and pre-order the books',
     description:
-      'Seven stories by Sofia Agacher for bilingual families. Listen to the stories narrated by the author on VK Video and YouTube, and leave a pre-order request for the book series.',
+      'Seven stories by Sofia Agacher for bilingual families. Listen to the stories narrated by the author on VK Video and YouTube, read her plays for children’s theatres in the “Zhivaya Kniga” collection, and leave a pre-order request for the book series.',
     keywords: [
-      'The Adventures of Romka and his Grandmother',
+      'Stories About Romka and His Grandmother',
       'Sofia Agacher',
       'bilingual children books',
       'stories for children',
       'audio stories for kids',
       'family reading',
+      'plays for children’s theatre',
+      'Zhivaya Kniga',
     ],
   },
   nav: {
     about: 'About the series',
+    plays: 'Plays and festival',
     listen: 'Listen to the stories',
     order: 'Pre-order',
     languageLabel: 'Site language',
@@ -401,7 +441,7 @@ const en: Dict = {
   hero: {
     eyebrow: 'Sofia Agacher · a series of 7 books',
     titleRu: 'Рассказы о Ромке и его бабушке',
-    titleEn: 'The Adventures of Romka and his Grandmother',
+    titleEn: 'Stories About Romka and His Grandmother',
     lead: 'Seven separate books for bilingual families: about 80–100 pages each, in the familiar squared-notebook format, with warm watercolour illustrations. Russian and English editions in one series.',
     facts: ['7 books in the series', '80–100 pages', 'Squared-notebook format', 'Russian and English'],
     ctaOrder: 'Leave a request',
@@ -411,10 +451,10 @@ const en: Dict = {
   about: {
     heading: 'About the series',
     body:
-      'DEAR READERS! While the stories in the “The Adventures of Romka and his Grandmother” series are being prepared for publication, you can listen to them, narrated by Sofia Agacher. If you would like to purchase one or more books in the series, please leave your pre-order request here.',
+      'DEAR READERS! While the stories in the “Stories About Romka and His Grandmother” series are being prepared for publication, you can listen to them, narrated by Sofia Agacher. If you would like to purchase one or more books in the series, please leave your pre-order request here.',
     note: 'While the books are being prepared for print we are collecting pre-order requests — no payment, no obligation. We will write to you as soon as the books are ready.',
     authorLinkLabel: 'Sofia Agacher’s website',
-    seriesTitle: 'What the series “The Adventures of Romka and his Grandmother” is',
+    seriesTitle: 'What the series “Stories About Romka and His Grandmother” is',
     seriesPoints: [
       {
         title: '7 separate books',
@@ -452,6 +492,24 @@ const en: Dict = {
     galleryActual: 'Actual size',
     galleryDragHint:
       'Use the mouse wheel to zoom. Move the cursor to the edge of the screen to see the rest of the spread.',
+  },
+  plays: {
+    heading: 'Plays and festival',
+    title: 'Sofia Agacher also wrote plays based on these stories',
+    body:
+      'The heroes of the series live beyond the pages of the books: Sofia Agacher has written plays for children’s theatre groups based on the stories about Romka and his Grandmother. The plays are collected in the volume “Zhivaya Kniga” (“The Living Book”), and every year the “Zhivaya Kniga” festival is held staging them.',
+    points: [
+      {
+        title: '“Zhivaya Kniga” — the collected plays',
+        text: 'Plays for children’s theatre groups based on the stories about Romka and his Grandmother, published as one book on the Ridero platform.',
+      },
+      {
+        title: 'The annual “Zhivaya Kniga” festival',
+        text: 'Every year children’s theatre groups stage these plays: the stories come to life on stage, performed by the children themselves.',
+      },
+    ],
+    playsBookLabel: 'Read the book on Ridero',
+    festivalLabel: 'The “Zhivaya Kniga” festival website',
   },
   stories: {
     heading: 'Listen to the stories',
@@ -502,10 +560,13 @@ const en: Dict = {
     privacyNote: 'We use your data only to contact you about your pre-order.',
   },
   footer: {
-    tagline: 'The Adventures of Romka and his Grandmother — a book series for family reading in Russian and English.',
+    tagline: 'Stories About Romka and His Grandmother — a book series for family reading in Russian and English.',
     authorHeading: 'Author',
     authorText: 'Sofia Agacher — author of the series and narrator of the audio versions.',
-    authorLink: 'agacher.com',
+    authorLink: 'sofia-agacher.vercel.app',
+    playsHeading: 'Plays and festivals',
+    playsBook: '“Zhivaya Kniga” — Collected Plays',
+    festival: 'The “Zhivaya Kniga” Festival',
     contactsHeading: 'Contacts',
     emailLabel: 'Email',
     legalHeading: 'Documents',
@@ -522,7 +583,7 @@ const en: Dict = {
   },
   admin: {
     loginTitle: 'CRM sign in',
-    loginSubtitle: 'Lead management panel for “The Adventures of Romka and his Grandmother”.',
+    loginSubtitle: 'Lead management panel for “Stories About Romka and His Grandmother”.',
     email: 'Email',
     password: 'Password',
     signIn: 'Sign in',

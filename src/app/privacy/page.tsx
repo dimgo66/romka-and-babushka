@@ -136,8 +136,7 @@ function PrivacyEn() {
       <section>
         <h2 className="font-display text-lg font-bold text-brand-ink">1. General</h2>
         <p>
-          This policy describes how the website of the book series “The Adventures of Romka and his
-          Grandmother” (the “Site”) processes visitors’ personal data. The data controller is the author of the series,
+          This policy describes how the website of the book series “Stories About Romka and His Grandmother” (the “Site”) processes visitors’ personal data. The data controller is the author of the series,
           Sofia Agacher. Contact:{' '}
           <a href={`mailto:${SITE.contactEmail}`} className="link-underline">
             {SITE.contactEmail}

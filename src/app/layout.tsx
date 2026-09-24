@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: dict.meta.description,
     keywords: dict.meta.keywords,
-    applicationName: 'The Adventures of Romka and his Grandmother',
+    applicationName: 'Stories About Romka and His Grandmother',
     authors: [{ name: 'София Агачер / Sofia Agacher', url: SITE.authorSite }],
     alternates: {
       canonical: '/',
@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       url: base,
-      siteName: 'The Adventures of Romka and his Grandmother',
+      siteName: 'Stories About Romka and His Grandmother',
       locale: OG_LOCALE[locale],
       title: dict.meta.title,
       description: dict.meta.description,

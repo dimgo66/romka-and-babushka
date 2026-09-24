@@ -12,6 +12,7 @@ type Props = {
 
 const NAV_ITEMS = [
   { id: 'about', key: 'about' as const },
+  { id: 'plays', key: 'plays' as const },
   { id: 'stories', key: 'listen' as const },
   { id: 'order', key: 'order' as const },
 ];
@@ -31,7 +32,7 @@ export function Header({ locale, dict }: Props) {
           <CatMark className="h-8 w-8 shrink-0" />
           <span className="font-display text-xs font-extrabold leading-tight text-brand-ink sm:text-sm">
             {locale === 'en'
-              ? 'The Adventures of Romka and his Grandmother'
+              ? 'Stories About Romka and His Grandmother'
               : 'Рассказы о Ромке и его бабушке'}
           </span>
         </a>

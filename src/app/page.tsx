@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { About } from '@/components/About';
+import { Plays } from '@/components/Plays';
 import { StoriesGrid } from '@/components/StoriesGrid';
 import { LeadForm } from '@/components/LeadForm';
 import { Footer } from '@/components/Footer';
@@ -39,12 +40,12 @@ export default async function HomePage() {
         '@id': `${base}/#series`,
         name:
           locale === 'en'
-            ? 'The Adventures of Romka and his Grandmother'
+            ? 'Stories About Romka and His Grandmother'
             : 'Рассказы о Ромке и его бабушке',
         alternateName:
           locale === 'en'
             ? 'Рассказы о Ромке и его бабушке'
-            : 'The Adventures of Romka and his Grandmother',
+            : 'Stories About Romka and His Grandmother',
         numberOfItems: STORIES.length,
         inLanguage: ['ru', 'en'],
         author: { '@type': 'Person', name: 'София Агачер', alternateName: 'Sofia Agacher', url: SITE.authorSite },
@@ -72,6 +73,32 @@ export default async function HomePage() {
           inLanguage: 'ru',
         })),
       })),
+      // Сборник пьес и ежегодный фестиваль «Живая книга»
+      {
+        '@type': 'Book',
+        '@id': `${base}/#zhivaya-kniga`,
+        name: 'Сборник пьес «Живая книга»',
+        alternateName: 'Zhivaya Kniga — Collected Plays',
+        description: dict.plays.body,
+        inLanguage: 'ru',
+        author: { '@type': 'Person', name: 'София Агачер', alternateName: 'Sofia Agacher', url: SITE.authorSite },
+        genre: 'Драматургия для детского театра',
+        url: SITE.playsBookUrl,
+      },
+      {
+        '@type': 'Festival',
+        '@id': `${base}/#festival-zhivaya-kniga`,
+        name: 'Фестиваль «Живая книга»',
+        alternateName: 'Zhivaya Kniga Festival',
+        description: dict.plays.points[1]?.text ?? '',
+        inLanguage: 'ru',
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        performer: { '@type': 'Organization', name: 'Детские театральные коллективы' },
+        organizer: { '@type': 'Person', name: 'София Агачер', url: SITE.authorSite },
+        url: SITE.festivalUrl,
+        workFeatured: { '@id': `${base}/#zhivaya-kniga` },
+      },
       {
         '@type': 'WebSite',
         '@id': `${base}/#website`,
@@ -97,6 +124,7 @@ export default async function HomePage() {
       <main id="main">
         <Hero locale={locale} dict={dict} />
         <About dict={dict} />
+        <Plays dict={dict} />
         <StoriesGrid locale={locale} dict={dict} />
         <LeadForm locale={locale} dict={dict} />
       </main>

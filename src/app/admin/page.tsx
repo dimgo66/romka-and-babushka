@@ -24,7 +24,7 @@ export default async function AdminPage() {
           <CatMark className="h-8 w-8 shrink-0" />
           <span className="font-display text-sm font-extrabold text-brand-ink">
             {locale === 'en'
-              ? 'The Adventures of Romka and his Grandmother'
+              ? 'Stories About Romka and His Grandmother'
               : 'Рассказы о Ромке и его бабушке'}{' '}
             · CRM
           </span>

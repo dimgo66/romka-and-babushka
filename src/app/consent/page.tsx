@@ -46,8 +46,7 @@ export default async function ConsentPage() {
             submission date and time, IP address and User-Agent string.
           </p>
           <p>
-            <strong>Purpose:</strong> contacting me when the “The Adventures of Romka and his
-            Grandmother” book series is ready for print, and clarifying my pre-order.
+            <strong>Purpose:</strong> contacting me when the “Stories About Romka and His Grandmother” book series is ready for print, and clarifying my pre-order.
           </p>
           <p>
             <strong>Operations:</strong> collection, recording, storage, clarification, use, blocking,

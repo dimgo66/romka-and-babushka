@@ -15,10 +15,10 @@ export function Footer({ locale, dict }: Props) {
       <div className="container-page grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-2">
           <p className="font-display text-lg font-extrabold text-brand-ink">
-            {locale === 'en' ? 'The Adventures of Romka and his Grandmother' : 'Рассказы о Ромке и его бабушке'}
+            {locale === 'en' ? 'Stories About Romka and His Grandmother' : 'Рассказы о Ромке и его бабушке'}
           </p>
           <p className="mt-1 text-sm font-semibold text-brand-green-dark" lang={locale === 'en' ? 'ru' : 'en'}>
-            {locale === 'en' ? 'Рассказы о Ромке и его бабушке' : 'The Adventures of Romka and his Grandmother'}
+            {locale === 'en' ? 'Рассказы о Ромке и его бабушке' : 'Stories About Romka and His Grandmother'}
           </p>
           <p className="prose-warm mt-3 max-w-md text-sm">{dict.footer.tagline}</p>
         </div>
@@ -36,6 +36,22 @@ export function Footer({ locale, dict }: Props) {
           >
             {dict.footer.authorLink} ↗
           </a>
+
+          <h2 className="mt-5 font-display text-sm font-bold uppercase tracking-wide text-brand-ink">
+            {dict.footer.playsHeading}
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            <li>
+              <a href={SITE.playsBookUrl} target="_blank" rel="noopener noreferrer" className="link-underline">
+                {dict.footer.playsBook} ↗
+              </a>
+            </li>
+            <li>
+              <a href={SITE.festivalUrl} target="_blank" rel="noopener noreferrer" className="link-underline">
+                {dict.footer.festival} ↗
+              </a>
+            </li>
+          </ul>
         </div>
 
         <div>

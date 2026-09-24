@@ -2,7 +2,7 @@
   "name": "romka-and-babushka",
   "version": "1.0.0",
   "private": true,
-  "description": "Двуязычный сайт «Рассказы о Ромке и его бабушке» / The Adventures of Romka and his Grandmother",
+  "description": "Двуязычный сайт «Рассказы о Ромке и его бабушке» / Stories About Romka and His Grandmother",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

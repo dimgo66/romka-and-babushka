@@ -1,9 +1,13 @@
 /** Общие настройки сайта / Site-wide constants */
 
 export const SITE = {
-  authorSite: 'https://agacher.com/',
+  authorSite: 'https://sofia-agacher.vercel.app/',
   contactEmail: 'agacher.bragbook@gmail.com',
   seriesSize: 7,
+  /** Сборник пьес Софии Агачер «Живая книга» на платформе Ridero */
+  playsBookUrl: 'https://ridero.ru/books/sbornik_pes_zhivaya_kniga/',
+  /** Сайт ежегодного фестиваля «Живая книга» по этим пьесам */
+  festivalUrl: 'https://festival-zhivaya-kniga.vercel.app/',
 } as const;
 
 /** Иллюстрации страниц фрагмента в виде широких разворотов (1615×808) */

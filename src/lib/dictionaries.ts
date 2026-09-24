@@ -264,7 +264,7 @@ const ru: Dict = {
     galleryFit: 'Вписать целиком',
     galleryActual: 'Реальный размер',
     galleryDragHint:
-      'Колёсико — масштаб. Ведите мышкой к краю экрана, чтобы посмотреть остальную часть разворота.',
+      'Колёсико мыши или щипок двумя пальцами — масштаб. Ведите разворот пальцем или мышкой к краю экрана, чтобы посмотреть остальную часть.',
   },
   plays: {
     heading: 'Пьесы и фестиваль',
@@ -491,7 +491,7 @@ const en: Dict = {
     galleryFit: 'Fit to screen',
     galleryActual: 'Actual size',
     galleryDragHint:
-      'Use the mouse wheel to zoom. Move the cursor to the edge of the screen to see the rest of the spread.',
+      'Zoom with the mouse wheel or a two-finger pinch. Drag the spread with a finger or the cursor towards the edge of the screen to see the rest.',
   },
   plays: {
     heading: 'Plays and festival',

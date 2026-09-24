@@ -14,6 +14,20 @@ type Props = {
 const MAX_ZOOM = 3; // 3× от реального размера — с запасом для мелкого текста
 const ZOOM_STEP = 0.25;
 
+/** Тач-устройство? По возможности CSS, без разбора user-agent-строк */
+function isCoarsePointer(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
+/** Расстояние между двумя первыми пальцами — база для щипка */
+function touchDistance(touches: TouchList): number {
+  const a = touches[0];
+  const b = touches[1];
+  if (!a || !b) return 0;
+  return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
+
 type Offset = { x: number; y: number };
 const NO_OFFSET: Offset = { x: 0, y: 0 };
 
@@ -46,6 +60,9 @@ export function PageIllustrations({ dict }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ px: number; py: number; ox: number; oy: number } | null>(null);
   const startedRef = useRef(false);
+  /** Актуальный масштаб для слушателей, которые нельзя перерегистрировать на каждое движение */
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
 
   const alt = useCallback(
     (i: number) => dict.about.illustrationsAlt[i] ?? dict.about.illustrationsTitle,
@@ -137,17 +154,18 @@ export function PageIllustrations({ dict }: Props) {
   }, [zoomed]);
 
   /**
-   * Всегда открываем разворот в реальном размере (1:1) — именно так буквы
-   * читаются лучше всего. Если картинка не влезает в экран, её можно
-   * утащить мышкой или пальцем; кнопка «Вписать целиком» показывает
-   * разворот полностью.
+   * Стартовый масштаб. На десктопе открываем в реальном размере (1:1) —
+   * так буквы читаются лучше всего. На телефоне 1:1 показал бы только центр
+   * разворота, то есть пустой стык между страницами, поэтому там стартуем от
+   * «вписано целиком», а крупный план включают кнопкой «Реальный размер»
+   * или щипком.
    */
   useEffect(() => {
     if (!zoomed || startedRef.current || !stage.w || !stage.h) return;
     startedRef.current = true;
-    setZoom(1);
+    setZoom(isCoarsePointer() ? fitZoom : 1);
     setOffset(NO_OFFSET);
-  }, [zoomed, stage.w, stage.h]);
+  }, [zoomed, stage.w, stage.h, fitZoom]);
 
   /**
    * При ресайзе окна держим состояние согласованным: масштаб не опускаем
@@ -249,13 +267,70 @@ export function PageIllustrations({ dict }: Props) {
     return () => node.removeEventListener('wheel', onWheel);
   }, [zoomed, fitZoom, clampOffset]);
 
+  /**
+   * Щипок двумя пальцами — мобильная замена колесу мыши. Слушатели вешаем
+   * вручную с passive: false, иначе браузер заберёт жест себе и картинка
+   * будет масштабировать всю страницу.
+   *
+   * Текущий масштаб читаем из ref: попади он в зависимости эффекта, слушатели
+   * перерегистрировались бы на каждом движении пальца, и базовое расстояние
+   * сбрасывалось бы посреди жеста.
+   */
+  useEffect(() => {
+    if (!zoomed) return;
+    const node = stageRef.current;
+    if (!node) return;
+
+    let baseDistance = 0;
+    let baseZoom = 1;
+
+    function onTouchStart(event: TouchEvent) {
+      if (event.touches.length !== 2) return;
+      baseDistance = touchDistance(event.touches);
+      baseZoom = zoomRef.current;
+      dragRef.current = null;
+      setDragging(false);
+      event.preventDefault();
+    }
+
+    function onTouchMove(event: TouchEvent) {
+      if (event.touches.length !== 2 || !baseDistance) return;
+      event.preventDefault();
+      const ratio = touchDistance(event.touches) / baseDistance;
+      setZoom((current) => {
+        const next = Math.min(MAX_ZOOM, Math.max(fitZoom, Number((baseZoom * ratio).toFixed(3))));
+        if (Math.abs(next - current) < 0.001) return current;
+        setOffset((currentOffset) =>
+          next <= fitZoom + 0.001 ? NO_OFFSET : clampOffset(currentOffset.x, currentOffset.y, next),
+        );
+        return next;
+      });
+    }
+
+    function onTouchEnd(event: TouchEvent) {
+      if (event.touches.length < 2) baseDistance = 0;
+    }
+
+    node.addEventListener('touchstart', onTouchStart, { passive: false });
+    node.addEventListener('touchmove', onTouchMove, { passive: false });
+    node.addEventListener('touchend', onTouchEnd);
+    node.addEventListener('touchcancel', onTouchEnd);
+    return () => {
+      node.removeEventListener('touchstart', onTouchStart);
+      node.removeEventListener('touchmove', onTouchMove);
+      node.removeEventListener('touchend', onTouchEnd);
+      node.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [zoomed, fitZoom, clampOffset]);
+
   /** Двигать есть смысл, только когда разворот больше области просмотра */
   const canDrag = zoom > fitZoom + 0.001;
   const atFit = zoom <= fitZoom + 0.001;
   const atActual = Math.abs(zoom - 1) < 0.005;
 
   function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
-    if (!canDrag) return;
+    // второй палец при щипке не должен начинать перетаскивание
+    if (!canDrag || !event.isPrimary) return;
     event.preventDefault();
     event.currentTarget.setPointerCapture?.(event.pointerId);
     dragRef.current = { px: event.clientX, py: event.clientY, ox: offset.x, oy: offset.y };
@@ -495,10 +570,14 @@ export function PageIllustrations({ dict }: Props) {
             и сдвиг не «съедают» её края, как это бывает при flex-центрировании.
             Закрытие — только по крестику или Esc: при панорамировании клик
             по фону слишком легко срабатывает случайно.
+
+            touch-none обязателен: без него браузер на тач-экране забирает
+            жест себе, прерывает pointer-последовательность (pointercancel),
+            и разворот не двигается за пальцем.
           */}
           <div
             ref={stageRef}
-            className="relative min-h-0 flex-1 overflow-hidden"
+            className="relative min-h-0 flex-1 touch-none overflow-hidden"
             style={{ cursor: canDrag ? (dragging ? 'grabbing' : 'grab') : 'default' }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}

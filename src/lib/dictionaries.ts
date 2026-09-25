@@ -251,7 +251,7 @@ const ru: Dict = {
       },
       {
         title: 'Два языка',
-        text: 'Русский и английский тексты для билингвальных семей и русскоязычных читателей за рубежом.',
+        text: 'Русский и английский тексты для билингвальных семей и русскоязычных читателей во всём мире.',
       },
     ],
     illustrationsTitle: 'Как выглядит разворот книги',
@@ -482,7 +482,7 @@ const en: Dict = {
       },
       {
         title: 'Two languages',
-        text: 'Russian and English texts for bilingual families and Russian-speaking readers abroad.',
+        text: 'Russian and English texts for bilingual families and Russian-speaking readers all over the world.',
       },
     ],
     illustrationsTitle: 'What a book spread looks like',

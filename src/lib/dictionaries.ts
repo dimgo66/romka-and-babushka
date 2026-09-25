@@ -49,6 +49,14 @@ export type Dict = {
     galleryActual: string;
     /** Подсказка в лайтбоксе: картинку можно двигать мышкой */
     galleryDragHint: string;
+    /** Лайтбокс: картинка ещё грузится */
+    galleryLoading: string;
+    /** Лайтбокс: картинку не удалось загрузить */
+    galleryError: string;
+    /** Лайтбокс: ссылка «открыть оригинал в новой вкладке» */
+    galleryOpenOriginal: string;
+    /** Лайтбокс: повторить загрузку, обойдя кэш */
+    galleryRetry: string;
   };
   plays: {
     heading: string;
@@ -265,6 +273,10 @@ const ru: Dict = {
     galleryActual: 'Реальный размер',
     galleryDragHint:
       'Колёсико мыши или щипок двумя пальцами — масштаб. Ведите разворот пальцем или мышкой к краю экрана, чтобы посмотреть остальную часть.',
+    galleryLoading: 'Загружаем разворот…',
+    galleryError: 'Разворот не загрузился. Нажмите «Открыть оригинал» или попробуйте ещё раз.',
+    galleryOpenOriginal: 'Открыть оригинал в новой вкладке',
+    galleryRetry: 'Попробовать загрузить заново',
   },
   plays: {
     heading: 'Пьесы и фестиваль',
@@ -492,6 +504,10 @@ const en: Dict = {
     galleryActual: 'Actual size',
     galleryDragHint:
       'Zoom with the mouse wheel or a two-finger pinch. Drag the spread with a finger or the cursor towards the edge of the screen to see the rest.',
+    galleryLoading: 'Loading the spread…',
+    galleryError: 'The spread did not load. Press “Open original” or try again.',
+    galleryOpenOriginal: 'Open the original in a new tab',
+    galleryRetry: 'Try loading it again',
   },
   plays: {
     heading: 'Plays and festival',

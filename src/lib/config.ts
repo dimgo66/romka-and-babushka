@@ -10,11 +10,18 @@ export const SITE = {
   festivalUrl: 'https://festival-zhivaya-kniga.vercel.app/',
 } as const;
 
-/** Иллюстрации страниц фрагмента в виде широких разворотов (1615×808) */
+/**
+ * Иллюстрации страниц фрагмента в виде широких разворотов (1615×808).
+ *
+ * Имена файлов — только ASCII. Лайтбокс грузит исходник напрямую, минуя
+ * оптимизатор Next, а не-ASCII в сыром `src` по пути от браузера до Vercel
+ * теряется на части мобильных браузеров и прокси (перекодирование пути),
+ * поэтому на телефоне разворот не загружался вовсе.
+ */
 export const PAGE_ILLUSTRATIONS = [
-  '/files/bilingual-golden-bean-fragment_Страница_1.jpg',
-  '/files/bilingual-golden-bean-fragment_Страница_2.jpg',
-  '/files/bilingual-golden-bean-fragment_Страница_3.jpg',
+  '/files/golden-bean-spread-1.jpg',
+  '/files/golden-bean-spread-2.jpg',
+  '/files/golden-bean-spread-3.jpg',
 ] as const;
 
 /**

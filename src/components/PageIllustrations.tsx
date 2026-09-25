@@ -54,10 +54,15 @@ export function PageIllustrations({ dict }: Props) {
   const [offset, setOffset] = useState<Offset>(NO_OFFSET);
   const [dragging, setDragging] = useState(false);
   const [stage, setStage] = useState({ w: 0, h: 0 });
+  /** Состояние исходника в лайтбоксе: пока не загрузился — не показываем пустоту */
+  const [imgState, setImgState] = useState<'loading' | 'ready' | 'error'>('loading');
+  /** Счётчик повторных загрузок: подмешивается в query, чтобы обойти кэш */
+  const [reloadKey, setReloadKey] = useState(0);
 
   const touchStartX = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const dragRef = useRef<{ px: number; py: number; ox: number; oy: number } | null>(null);
   const startedRef = useRef(false);
   /** Актуальный масштаб для слушателей, которые нельзя перерегистрировать на каждое движение */
@@ -124,6 +129,10 @@ export function PageIllustrations({ dict }: Props) {
       // при смене разворота сбрасываем масштаб к «вписано»
       setOffset(NO_OFFSET);
       startedRef.current = false;
+      // новый файл ещё не здесь — не показываем старый на его месте
+      // (бесвредно и при закрытом лайтбоксе: при открытии состояние
+      // всё равно выставляется заново в openZoom)
+      setImgState('loading');
       reachGoal(METRIKA_GOALS.galleryNext, { to: bounded + 1, via: goal });
     },
     [total],
@@ -133,6 +142,7 @@ export function PageIllustrations({ dict }: Props) {
   const next = useCallback(() => go(index + 1, 'arrow'), [go, index]);
 
   const openZoom = useCallback(() => {
+    setImgState('loading');
     setZoomed(true);
     setOffset(NO_OFFSET);
     startedRef.current = false;
@@ -141,16 +151,45 @@ export function PageIllustrations({ dict }: Props) {
 
   const closeZoom = useCallback(() => setZoomed(false), []);
 
-  /** Следим за размером области просмотра (поворот экрана, ресайз окна) */
+  /**
+   * Файл мог уже лежать в кэше браузера: тогда <img> отрендерится готовым,
+   * а onLoad до React не дойдёт (обработчик вешается после монтирования).
+   * Без этой проверки осталась бы вечная плашка «Загружаем…».
+   */
+  useEffect(() => {
+    if (!zoomed || imgState !== 'loading') return;
+    const img = imgRef.current;
+    if (!img) return;
+    if (img.complete && img.naturalWidth > 0) setImgState('ready');
+    else if (img.complete && img.naturalWidth === 0) setImgState('error');
+  }, [zoomed, imgState, index, reloadKey]);
+
+  /**
+   * Следим за размером области просмотра (поворот экрана, ресайз окна).
+   *
+   * Если клиент выдал нули (мобильный браузер ещё не завершил layout после
+   * переключения body.overflow), откатываемся на размеры окна: иначе fitZoom
+   * остаётся 1, «вписать целиком» не работает, и пользователь видит только
+   * центр разворота.
+   */
   useEffect(() => {
     if (!zoomed) return;
     const node = stageRef.current;
     if (!node) return;
-    const measure = () => setStage({ w: node.clientWidth, h: node.clientHeight });
+    const measure = () => {
+      const w = node.clientWidth || Math.round(window.innerWidth * 0.96);
+      const h = node.clientHeight || Math.round(window.innerHeight * 0.72);
+      setStage({ w, h });
+    };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(node);
-    return () => observer.disconnect();
+    // Второй замер следующим кадром: у части браузеров высота появляется позже
+    const raf = requestAnimationFrame(measure);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(raf);
+    };
   }, [zoomed]);
 
   /**
@@ -578,7 +617,13 @@ export function PageIllustrations({ dict }: Props) {
           <div
             ref={stageRef}
             className="relative min-h-0 flex-1 touch-none overflow-hidden"
-            style={{ cursor: canDrag ? (dragging ? 'grabbing' : 'grab') : 'default' }}
+            style={{
+              cursor: canDrag ? (dragging ? 'grabbing' : 'grab') : 'default',
+              // Страхуемся от схлопывания flex-1 в некоторых мобильных браузерах:
+              // при нулевой высоте overflow-hidden обрезал бы разворот целиком,
+              // и остались бы видны только элементы управления.
+              minHeight: stage.h ? undefined : '50dvh',
+            }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
@@ -587,11 +632,16 @@ export function PageIllustrations({ dict }: Props) {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={current}
+              key={`${current}-${reloadKey}`}
+              src={reloadKey ? `${current}?r=${reloadKey}` : current}
               alt={alt(index)}
               width={natW}
               height={natH}
               draggable={false}
+              decoding="async"
+              ref={imgRef}
+              onLoad={() => setImgState('ready')}
+              onError={() => setImgState('error')}
               style={{
                 position: 'absolute',
                 left: '50%',
@@ -603,9 +653,43 @@ export function PageIllustrations({ dict }: Props) {
                 transformOrigin: 'center center',
                 transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
                 transition: dragging ? 'none' : 'transform 120ms ease-out',
+                visibility: imgState === 'ready' ? 'visible' : 'hidden',
               }}
               className="touch-none select-none rounded-lg"
             />
+
+            {/*
+              Статус загрузки исходника. Если на телефоне вместо разворота
+              видна эта плашка — файл не доезжает (сеть/прокси), и это уже
+              не проблема вёрстки лайтбокса.
+            */}
+            {imgState !== 'ready' && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+                <p className="text-sm font-semibold text-white/80">
+                  {imgState === 'loading' ? dict.about.galleryLoading : dict.about.galleryError}
+                </p>
+                {imgState === 'error' && (
+                  <>
+                    <a
+                      href={current}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full bg-white/15 px-4 py-2 text-xs font-semibold text-white hover:bg-white/25"
+                    >
+                      {dict.about.galleryOpenOriginal} ↗
+                    </a>
+                    {/* Пробный запрос без кэша: отличает «файл не существует» от «испортило при передаче» */}
+                    <button
+                      type="button"
+                      onClick={() => setReloadKey((k) => k + 1)}
+                      className="rounded-full border border-white/30 px-4 py-2 text-xs font-semibold text-white/90 hover:bg-white/15"
+                    >
+                      {dict.about.galleryRetry}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Подсказка + переключение разворотов */}

@@ -646,12 +646,26 @@ export function PageIllustrations({ dict }: Props) {
                 position: 'absolute',
                 left: '50%',
                 top: '50%',
-                marginLeft: -natW / 2,
-                marginTop: -natH / 2,
                 width: natW,
                 height: natH,
+                /*
+                  Обязательная строка. Сброс Tailwind (preflight) задаёт
+                  `img, video { max-width: 100% }`, и инлайновым width он не
+                  перебивается: это разные свойства. Без `maxWidth: 'none'`
+                  на узком экране разворот рисовался шириной с область
+                  просмотра (~374 px вместо 1615), а центрирование отступом
+                  -natW/2 считалось бы от натуральной ширины — левый край
+                  уезжал за экран на 620 px, и виден был только краешек.
+                  На десктопе баг не проявлялся: там область шире 1615 px.
+                */
+                maxWidth: 'none',
                 transformOrigin: 'center center',
-                transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+                /*
+                  Центрирование через transform, а не через отступы: проценты
+                  здесь считаются от собственного размера картинки, поэтому
+                  позиция больше не зависит ни от каких ограничений ширины.
+                */
+                transform: `translate(-50%, -50%) translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
                 transition: dragging ? 'none' : 'transform 120ms ease-out',
                 visibility: imgState === 'ready' ? 'visible' : 'hidden',
               }}

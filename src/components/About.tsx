@@ -41,6 +41,35 @@ export function About({ dict }: Props) {
 
         {/* Развороты книги — во всю ширину страницы, вне двухколоночной сетки */}
         <PageIllustrations dict={dict} />
+
+        {/*
+          Конкурс рисунка. На разворотах выше художник оставил пустой белый
+          квадрат — это место для рисунка читателя, поэтому блок идёт сразу
+          под слайдером: видно, о каком квадрате речь.
+        */}
+        <div className="mt-8 rounded-xl2 border border-brand-orange/50 bg-white/85 p-5 shadow-soft sm:p-7">
+          <h3 className="font-display text-lg font-bold text-brand-ink sm:text-xl">{dict.about.contest.heading}</h3>
+
+          <p className="prose-warm mt-3">{dict.about.contest.lead}</p>
+
+          <p className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="text-sm font-semibold text-brand-ink-soft">{dict.about.contest.emailLabel}:</span>
+            <a href={`mailto:${SITE.contactEmail}`} className="link-underline break-all text-base">
+              {SITE.contactEmail}
+            </a>
+          </p>
+
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            {[dict.about.contest.schedule, dict.about.contest.prize].map((item) => (
+              <li
+                key={item}
+                className="rounded-xl border border-brand-beige-dark bg-brand-beige/70 px-4 py-3 text-sm leading-relaxed text-brand-ink-soft"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

@@ -11,7 +11,11 @@ export const SITE = {
 } as const;
 
 /**
- * Иллюстрации страниц фрагмента в виде широких разворотов (1615×808).
+ * Иллюстрации-развороты книги (1615×808): стр. 4–5, 22–23 и 32–33 вёрстки
+ * «Билингва_Золотой БОБ-3_30.10.pdf».
+ *
+ * На каждом развороте художник оставил пустой белый квадрат — место для
+ * рисунка читателя (см. блок конкурса в секции «О цикле»).
  *
  * Имена файлов — только ASCII. Лайтбокс грузит исходник напрямую, минуя
  * оптимизатор Next, а не-ASCII в сыром `src` по пути от браузера до Vercel
@@ -19,9 +23,9 @@ export const SITE = {
  * поэтому на телефоне разворот не загружался вовсе.
  */
 export const PAGE_ILLUSTRATIONS = [
-  '/files/golden-bean-spread-1.jpg',
-  '/files/golden-bean-spread-2.jpg',
-  '/files/golden-bean-spread-3.jpg',
+  '/files/bilingual-spread-1.jpg',
+  '/files/bilingual-spread-2.jpg',
+  '/files/bilingual-spread-3.jpg',
 ] as const;
 
 /**

@@ -57,6 +57,15 @@ export type Dict = {
     galleryOpenOriginal: string;
     /** Лайтбокс: повторить загрузку, обойдя кэш */
     galleryRetry: string;
+    /** Конкурс рисунка: пустой квадрат, оставленный художником */
+    contest: {
+      heading: string;
+      lead: string;
+      /** Подпись над адресом почты */
+      emailLabel: string;
+      schedule: string;
+      prize: string;
+    };
   };
   plays: {
     heading: string;
@@ -254,12 +263,13 @@ const ru: Dict = {
         text: 'Русский и английский тексты для билингвальных семей и русскоязычных читателей во всём мире.',
       },
     ],
-    illustrationsTitle: 'Как выглядит разворот книги',
-    illustrationsNote: 'Русская и английская версии идут в одном издании — текст и иллюстрации на каждом развороте.',
+    illustrationsTitle: 'Развороты книги с иллюстрациями',
+    illustrationsNote:
+      'Русская и английская версии идут в одном издании — текст и иллюстрации на каждом развороте. Белый квадрат на этих разворотах художник оставил для рисунка читателя.',
     illustrationsAlt: [
-      'Разворот книги: русский и английский тексты, акварельная иллюстрация',
-      'Разворот книги: продолжение истории, двуязычный текст',
-      'Разворот книги: завершение фрагмента, двуязычный текст',
+      'Разворот книги: витрина с наряженными ёлками в стеклянном шаре, зимняя улица — акварель и тушь',
+      'Разворот книги: пляж с полосатым спасательным маяком, воздушные змеи и песчаные замки',
+      'Разворот книги: пляжное пугало в соломенной шляпе, пёс, зонтики и песчаные замки',
     ],
     galleryPrev: 'Предыдущий разворот',
     galleryNext: 'Следующий разворот',
@@ -277,6 +287,14 @@ const ru: Dict = {
     galleryError: 'Разворот не загрузился. Нажмите «Открыть оригинал» или попробуйте ещё раз.',
     galleryOpenOriginal: 'Открыть оригинал в новой вкладке',
     galleryRetry: 'Попробовать загрузить заново',
+    contest: {
+      heading: 'Конкурс рисунка',
+      lead:
+        'Художник оставил этот квадрат специально для читателя. Нарисуй в нём свою картинку и пришли на конкурс его фото по адресу:',
+      emailLabel: 'Фото рисунка присылайте на почту',
+      schedule: 'Итоги конкурса будут подводиться ежегодно 1 января.',
+      prize: 'А победитель получит в подарок следующую книгу из серии.',
+    },
   },
   plays: {
     heading: 'Пьесы и фестиваль',
@@ -485,12 +503,13 @@ const en: Dict = {
         text: 'Russian and English texts for bilingual families and Russian-speaking readers all over the world.',
       },
     ],
-    illustrationsTitle: 'What a book spread looks like',
-    illustrationsNote: 'The Russian and English editions come in one series — text and illustrations on each spread.',
+    illustrationsTitle: 'The book spreads in illustrations',
+    illustrationsNote:
+      'The Russian and English editions come in one series — text and illustrations on each spread. The white square on these spreads is a place the artist left for the reader’s own drawing.',
     illustrationsAlt: [
-      'Book spread: Russian and English texts, watercolour illustration',
-      'Book spread: the story continues, bilingual text',
-      'Book spread: the end of the fragment, bilingual text',
+      'Book spread: a shop window with decorated Christmas trees inside a glass globe on a winter street — watercolour and ink',
+      'Book spread: a beach with a striped lifeguard tower, colourful kites and sandcastles',
+      'Book spread: a beach scarecrow in a straw hat, a dog, parasols and sandcastles',
     ],
     galleryPrev: 'Previous spread',
     galleryNext: 'Next spread',
@@ -508,6 +527,14 @@ const en: Dict = {
     galleryError: 'The spread did not load. Press “Open original” or try again.',
     galleryOpenOriginal: 'Open the original in a new tab',
     galleryRetry: 'Try loading it again',
+    contest: {
+      heading: 'Drawing contest',
+      lead:
+        'The artist left this square especially for the reader. Draw your own picture in it and send a photo of it to the contest at:',
+      emailLabel: 'Send a photo of your drawing to',
+      schedule: 'The results of the contest will be summed up every year on 1 January.',
+      prize: 'And the winner will receive the next book in the series as a gift.',
+    },
   },
   plays: {
     heading: 'Plays and festival',

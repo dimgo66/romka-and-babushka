@@ -40,6 +40,8 @@ export type Dict = {
     galleryZoom: string;
     galleryClose: string;
     galleryCounter: string;
+    /** Подпись счётчика для обложки — она не разворот */
+    galleryCover: string;
     galleryHint: string;
     galleryZoomIn: string;
     galleryZoomOut: string;
@@ -263,19 +265,26 @@ const ru: Dict = {
         text: 'Русский и английский тексты для билингвальных семей и русскоязычных читателей во всём мире.',
       },
     ],
-    illustrationsTitle: 'Развороты книги с иллюстрациями',
+    illustrationsTitle: 'Обложка и развороты книги',
     illustrationsNote:
-      'Русская и английская версии идут в одном издании — текст и иллюстрации на каждом развороте. Белый квадрат на этих разворотах художник оставил для рисунка читателя.',
+      'Русская и английская версии идут в одном издании — текст и иллюстрации на каждом развороте. На разворотах с картинами художник оставил белый квадрат — место для рисунка читателя.',
     illustrationsAlt: [
-      'Разворот книги: витрина с наряженными ёлками в стеклянном шаре, зимняя улица — акварель и тушь',
-      'Разворот книги: пляж с полосатым спасательным маяком, воздушные змеи и песчаные замки',
-      'Разворот книги: пляжное пугало в соломенной шляпе, пёс, зонтики и песчаные замки',
+      'Обложка книги «Зеркальный боб желаний, или Ромка из племени чёрных котов» — София Агачер, серия Bilingual Book Series',
+      'Разворот книги: обращение автора «Дорогие друзья!» на русском и английском языках',
+      'Разворот-иллюстрация: витрина с наряженными ёлками в стеклянном шаре, зимняя улица',
+      'Разворот книги: Ромка у зеркала в спальне бабушки — русский и английский текст, акварели',
+      'Разворот книги: Ромка и бабушка говорят о сказках — двуязычный текст и акварели',
+      'Разворот книги: разговор о зеркальном бобе и поездке в парк — двуязычный текст с акварелями',
+      'Разворот книги: воспоминание о фонтане в Миллениум-парке — русский и английский текст с акварелями',
+      'Разворот-иллюстрация: пляж с полосатым спасательным маяком, воздушные змеи и песчаные замки',
+      'Разворот-иллюстрация: пляжное пугало в соломенной шляпе, пёс, зонтики и песчаные замки',
     ],
     galleryPrev: 'Предыдущий разворот',
     galleryNext: 'Следующий разворот',
     galleryZoom: 'Открыть крупно',
     galleryClose: 'Закрыть просмотр',
     galleryCounter: 'Разворот',
+    galleryCover: 'Обложка',
     galleryHint: 'Переключайте развороты стрелками, нажмите на картинку — откроется крупно.',
     galleryZoomIn: 'Увеличить',
     galleryZoomOut: 'Уменьшить',
@@ -503,19 +512,26 @@ const en: Dict = {
         text: 'Russian and English texts for bilingual families and Russian-speaking readers all over the world.',
       },
     ],
-    illustrationsTitle: 'The book spreads in illustrations',
+    illustrationsTitle: 'The cover and the spreads of the book',
     illustrationsNote:
-      'The Russian and English editions come in one series — text and illustrations on each spread. The white square on these spreads is a place the artist left for the reader’s own drawing.',
+      'The Russian and English editions come in one series — text and illustrations on each spread. On the illustrated spreads the artist left a white square as a place for the reader’s own drawing.',
     illustrationsAlt: [
-      'Book spread: a shop window with decorated Christmas trees inside a glass globe on a winter street — watercolour and ink',
-      'Book spread: a beach with a striped lifeguard tower, colourful kites and sandcastles',
-      'Book spread: a beach scarecrow in a straw hat, a dog, parasols and sandcastles',
+      'Cover of the book “The Mirror Bean of Wishes, or Romka from the Black Cat Tribe” by Sofia Agacher, Bilingual Book Series',
+      'Book spread: the author’s opening letter “Dear friends” in Russian and English',
+      'Illustrated spread: a shop window with decorated Christmas trees inside a glass globe on a winter street',
+      'Book spread: Romka in front of the mirror in Grandma’s bedroom — Russian and English text with watercolours',
+      'Book spread: Romka and Grandma talk about fairy tales — bilingual text and watercolours',
+      'Book spread: a conversation about the mirror bean and a trip to the park — bilingual text with watercolours',
+      'Book spread: a memory of the fountain in Millennium Park — Russian and English text with watercolours',
+      'Illustrated spread: a beach with a striped lifeguard tower, colourful kites and sandcastles',
+      'Illustrated spread: a beach scarecrow in a straw hat, a dog, parasols and sandcastles',
     ],
     galleryPrev: 'Previous spread',
     galleryNext: 'Next spread',
     galleryZoom: 'Open larger',
     galleryClose: 'Close viewer',
     galleryCounter: 'Spread',
+    galleryCover: 'Cover',
     galleryHint: 'Switch spreads with the arrows, click an image to view it larger.',
     galleryZoomIn: 'Zoom in',
     galleryZoomOut: 'Zoom out',

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Dict } from '@/lib/dictionaries';
-import { PAGE_ILLUSTRATIONS, PAGE_ILLUSTRATION_SIZE } from '@/lib/config';
+import { PAGE_ILLUSTRATIONS } from '@/lib/config';
 import { METRIKA_GOALS, reachGoal } from '@/lib/metrika';
 
 type Props = {
@@ -45,10 +45,19 @@ const NO_OFFSET: Offset = { x: 0, y: 0 };
  */
 export function PageIllustrations({ dict }: Props) {
   const total = PAGE_ILLUSTRATIONS.length;
-  const natW = PAGE_ILLUSTRATION_SIZE.width;
-  const natH = PAGE_ILLUSTRATION_SIZE.height;
 
   const [index, setIndex] = useState(0);
+
+  /**
+   * Текущий слайд. Размеры берём у него самого: обложка в макете квадратная
+   * (1615×1615), развороты — 1615×808. По ним считаются fitZoom, границы
+   * перетаскивания и реальный размер в лайтбоксе, поэтому при смене слайда
+   * они пересчитываются вместе с ним.
+   */
+  const current = PAGE_ILLUSTRATIONS[index] ?? PAGE_ILLUSTRATIONS[0];
+  const natW = current.width;
+  const natH = current.height;
+
   const [zoomed, setZoomed] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState<Offset>(NO_OFFSET);
@@ -71,6 +80,13 @@ export function PageIllustrations({ dict }: Props) {
 
   const alt = useCallback(
     (i: number) => dict.about.illustrationsAlt[i] ?? dict.about.illustrationsTitle,
+    [dict],
+  );
+
+  /** Подпись слайда: у обложки — «Обложка», у остальных — «Разворот» */
+  const slideLabel = useCallback(
+    (i: number) =>
+      PAGE_ILLUSTRATIONS[i]?.kind === 'cover' ? dict.about.galleryCover : dict.about.galleryCounter,
     [dict],
   );
 
@@ -452,8 +468,6 @@ export function PageIllustrations({ dict }: Props) {
     go(delta < 0 ? index + 1 : index - 1, 'swipe');
   }
 
-  const current = PAGE_ILLUSTRATIONS[index];
-
   return (
     <div className="mt-8">
       <h3 className="font-display text-base font-bold text-brand-ink">{dict.about.illustrationsTitle}</h3>
@@ -481,7 +495,17 @@ export function PageIllustrations({ dict }: Props) {
             height={natH}
             priority={index === 0}
             sizes="(max-width: 1024px) 100vw, 1100px"
-            className="h-auto w-full object-contain"
+            /*
+              Обложка квадратная: без ограничения по высоте она занимает почти
+              весь экран, и при переключении на разворот страница прыгает вдвое
+              по высоте. Ограничиваем её 70vh и центрируем, развороты (2:1)
+              остаются на всю ширину.
+            */
+            className={
+              current.kind === 'cover'
+                ? 'mx-auto h-auto w-auto max-h-[70vh] rounded-xl object-contain'
+                : 'h-auto w-full object-contain'
+            }
           />
           <span className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-brand-ink/80 px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
             <span aria-hidden="true">⤢</span>
@@ -514,16 +538,16 @@ export function PageIllustrations({ dict }: Props) {
       {/* Индикатор: номер разворота и точки-переключатели */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs font-semibold text-brand-ink-soft" aria-live="polite">
-          {dict.about.galleryCounter} {index + 1} / {total}
+          {slideLabel(index)} {index + 1} / {total}
         </p>
         {total > 1 && (
           <div className="flex items-center gap-1.5">
-            {PAGE_ILLUSTRATIONS.map((src, i) => (
+            {PAGE_ILLUSTRATIONS.map((slide, i) => (
               <button
-                key={src}
+                key={slide.src}
                 type="button"
                 onClick={() => go(i, 'arrow')}
-                aria-label={`${dict.about.galleryCounter} ${i + 1}`}
+                aria-label={`${slideLabel(i)} ${i + 1}`}
                 aria-current={i === index}
                 className={[
                   'h-2.5 w-2.5 rounded-full transition',
@@ -550,7 +574,7 @@ export function PageIllustrations({ dict }: Props) {
           {/* Панель управления */}
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 bg-brand-ink/85 px-3 py-2 text-white sm:gap-3 sm:px-4">
             <p className="text-sm font-semibold">
-              {dict.about.galleryCounter} {index + 1} / {total}
+              {slideLabel(index)} {index + 1} / {total}
               <span className="ml-2 font-normal text-white/70">{Math.round(zoom * 100)}%</span>
             </p>
 
@@ -632,8 +656,8 @@ export function PageIllustrations({ dict }: Props) {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              key={`${current}-${reloadKey}`}
-              src={reloadKey ? `${current}?r=${reloadKey}` : current}
+              key={`${current.src}-${reloadKey}`}
+              src={reloadKey ? `${current.src}?r=${reloadKey}` : current.src}
               alt={alt(index)}
               width={natW}
               height={natH}
@@ -685,7 +709,7 @@ export function PageIllustrations({ dict }: Props) {
                 {imgState === 'error' && (
                   <>
                     <a
-                      href={current}
+                      href={current.src}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="rounded-full bg-white/15 px-4 py-2 text-xs font-semibold text-white hover:bg-white/25"

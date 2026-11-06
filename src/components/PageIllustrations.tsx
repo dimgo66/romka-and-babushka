@@ -488,25 +488,27 @@ export function PageIllustrations({ dict }: Props) {
           className="group relative block w-full cursor-zoom-in"
           aria-label={`${dict.about.galleryZoom}: ${alt(index)}`}
         >
-          <Image
-            src={current}
-            alt={alt(index)}
-            width={natW}
-            height={natH}
-            priority={index === 0}
-            sizes="(max-width: 1024px) 100vw, 1100px"
-            /*
-              Обложка квадратная: без ограничения по высоте она занимает почти
-              весь экран, и при переключении на разворот страница прыгает вдвое
-              по высоте. Ограничиваем её 70vh и центрируем, развороты (2:1)
-              остаются на всю ширину.
-            */
-            className={
-              current.kind === 'cover'
-                ? 'mx-auto h-auto w-auto max-h-[70vh] rounded-xl object-contain'
-                : 'h-auto w-full object-contain'
-            }
-          />
+          {/*
+            Кадр слайдера держим в пропорции разворота (2:1). Квадратная
+            обложка вписывается по высоте, а по бокам остаются белые поля
+            «бумаги»: высота галереи одна и та же на всех слайдах, поэтому
+            страница не прыгает при переключении.
+          */}
+          <span className="relative flex aspect-[2/1] w-full items-center justify-center bg-white">
+            <Image
+              src={current.src}
+              alt={alt(index)}
+              width={natW}
+              height={natH}
+              priority={index === 0}
+              sizes="(max-width: 1024px) 100vw, 1100px"
+              className={
+                current.kind === 'cover'
+                  ? 'h-full w-auto object-contain'
+                  : 'h-full w-full object-contain'
+              }
+            />
+          </span>
           <span className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-brand-ink/80 px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
             <span aria-hidden="true">⤢</span>
             {dict.about.galleryZoom}
